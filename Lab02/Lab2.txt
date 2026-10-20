@@ -1,81 +1,81 @@
-estudiante@ip-192-168-166-41:/home/est1$ docker-compose-lab-kafka.yml
-docker-compose-lab-kafka.yml: command not found
-estudiante@ip-192-168-166-41:/home/est1$ docker compose -f docker-compose-lab-kafka.yml ps
-compose file "/home/est1/docker-compose-lab-kafka.yml" is invalid: open /home/est1/docker-compose-lab-kafka.yml: no such file or directory
-estudiante@ip-192-168-166-41:/home/est1$ docker-compose-lab-kafka.yml
-docker-compose-lab-kafka.yml: command not found
-estudiante@ip-192-168-166-41:/home/est1$ cd kafka-dian/entorno
-bash: cd: kafka-dian/entorno: No such file or directory
-estudiante@ip-192-168-166-41:/home/est1$ cd kafka-dian
-bash: cd: kafka-dian: No such file or directory
-estudiante@ip-192-168-166-41:/home/est1$ md kafka-dian
-md: command not found
-estudiante@ip-192-168-166-41:/home/est1$ cd kafka-dian
-bash: cd: kafka-dian: No such file or directory
+estudiante@ip-192-168-166-41:/home$ ls -l
+total 20
+drwxrws---+ 5 est1       laboratorio 4096 Oct  8 14:28 est1
+drwxrws---+ 5 est2       laboratorio 4096 Oct  8 14:28 est2
+drwxr-x---  8 estudiante estudiante  4096 Oct  6 16:30 estudiante
+drwx------  3 minio-user minio-user  4096 Sep 18 15:13 minio-user
+drwxr-x---  9 ubuntu     ubuntu      4096 Oct  6 19:48 ubuntu
+estudiante@ip-192-168-166-41:/home$ cd est1
 estudiante@ip-192-168-166-41:/home/est1$ ls -l
 total 4
 drwxrws---+ 3 estudiante laboratorio 4096 Oct  8 14:29 equipo09
 estudiante@ip-192-168-166-41:/home/est1$ cd equipo09
-estudiante@ip-192-168-166-41:/home/est1/equipo09$ cd kafka-dian/entorno
-estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker-compose-lab-kafka.yml
-docker-compose-lab-kafka.yml: command not found
+estudiante@ip-192-168-166-41:/home/est1/equipo09$ ls -l
+total 4
+drwxrws---+ 3 estudiante laboratorio 4096 Oct  8 14:29 kafka-dian
+estudiante@ip-192-168-166-41:/home/est1/equipo09$ cd kafka-dian
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian$ ls -l
+total 4
+drwxrws---+ 3 estudiante laboratorio 4096 Oct  8 15:21 entorno
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian$ cd entorno
 estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml ps
-NAME       IMAGE                            COMMAND                  SERVICE    CREATED              STATUS                        PORTS
-broker1    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker1    5 days ago           Up About a minute (healthy)   0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9101->9101/tcp, [::]:9101->9101/tcp
-broker2    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker2    5 days ago           Up About a minute (healthy)   0.0.0.0:9094->9094/tcp, [::]:9094->9094/tcp, 9092/tcp, 0.0.0.0:9102->9102/tcp, [::]:9102->9102/tcp
-broker3    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker3    5 days ago           Up About a minute (healthy)   0.0.0.0:9096->9096/tcp, [::]:9096->9096/tcp, 9092/tcp, 0.0.0.0:9103->9103/tcp, [::]:9103->9103/tcp
-kafka-ui   ghcr.io/kafbat/kafka-ui:v1.1.0   "/bin/sh -c 'java --…"   kafka-ui   About a minute ago   Up 59 seconds                 0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ kq describe --status
+kq: command not found
 estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml ps
-NAME       IMAGE                            COMMAND                  SERVICE    CREATED              STATUS                        PORTS
-broker1    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker1    5 days ago           Up About a minute (healthy)   0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9101->9101/tcp, [::]:9101->9101/tcp
-broker2    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker2    5 days ago           Up About a minute (healthy)   0.0.0.0:9094->9094/tcp, [::]:9094->9094/tcp, 9092/tcp, 0.0.0.0:9102->9102/tcp, [::]:9102->9102/tcp
-broker3    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker3    5 days ago           Up About a minute (healthy)   0.0.0.0:9096->9096/tcp, [::]:9096->9096/tcp, 9092/tcp, 0.0.0.0:9103->9103/tcp, [::]:9103->9103/tcp
-kafka-ui   ghcr.io/kafbat/kafka-ui:v1.1.0   "/bin/sh -c 'java --…"   kafka-ui   About a minute ago   Up About a minute             0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp
-estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml up -d
-[+] up 5/5
- ✔ Container broker1          Healthy                                                                                                   0.6s
- ✔ Container broker2          Healthy                                                                                                   0.6s
- ✔ Container broker3          Healthy                                                                                                   0.6s
- ✔ Container kafka-ui         Running                                                                                                   0.0s
- ✔ Container bootstrap-topics Started                                                                                                   0.2s
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml ps
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
 estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ alias kq='docker exec broker1 /opt/kafka/bin/kafka-metadata-quorum.sh --bootstrap-server broker1:19092'
 alias kt='docker exec broker1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker1:19092'
 estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml ps
-NAME       IMAGE                            COMMAND                  SERVICE    CREATED         STATUS                   PORTS
-broker1    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker1    5 days ago      Up 2 minutes (healthy)   0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9101->9101/tcp, [::]:9101->9101/tcp
-broker2    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker2    5 days ago      Up 2 minutes (healthy)   0.0.0.0:9094->9094/tcp, [::]:9094->9094/tcp, 9092/tcp, 0.0.0.0:9102->9102/tcp, [::]:9102->9102/tcp
-broker3    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker3    5 days ago      Up 2 minutes (healthy)   0.0.0.0:9096->9096/tcp, [::]:9096->9096/tcp, 9092/tcp, 0.0.0.0:9103->9103/tcp, [::]:9103->9103/tcp
-kafka-ui   ghcr.io/kafbat/kafka-ui:v1.1.0   "/bin/sh -c 'java --…"   kafka-ui   2 minutes ago   Up 2 minutes             0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
 estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml ps
-NAME       IMAGE                            COMMAND                  SERVICE    CREATED         STATUS                   PORTS
-broker1    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker1    5 days ago      Up 2 minutes (healthy)   0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9101->9101/tcp, [::]:9101->9101/tcp
-broker2    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker2    5 days ago      Up 2 minutes (healthy)   0.0.0.0:9094->9094/tcp, [::]:9094->9094/tcp, 9092/tcp, 0.0.0.0:9102->9102/tcp, [::]:9102->9102/tcp
-broker3    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker3    5 days ago      Up 2 minutes (healthy)   0.0.0.0:9096->9096/tcp, [::]:9096->9096/tcp, 9092/tcp, 0.0.0.0:9103->9103/tcp, [::]:9103->9103/tcp
-kafka-ui   ghcr.io/kafbat/kafka-ui:v1.1.0   "/bin/sh -c 'java --…"   kafka-ui   2 minutes ago   Up 2 minutes             0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp
-estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ kq describe --status^C
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ kq describe --status
+Error response from daemon: container bf5b8369fd4e6a8eb5ea456fc99a046bf71cefd327cdc31e32c537b55c057a06 is not running
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml up -d
+[+] up 5/5
+ ✔ Container broker1          Healthy                                                                                                  24.1s
+ ✔ Container broker2          Healthy                                                                                                  24.1s
+ ✔ Container broker3          Healthy                                                                                                  24.6s
+ ✔ Container kafka-ui         Started                                                                                                   0.3s
+ ✔ Container bootstrap-topics Started                                                                                                   0.3s
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ alias kt='docker exec broker1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker1:19092'
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml ps
+NAME       IMAGE                            COMMAND                  SERVICE    CREATED       STATUS                   PORTS
+broker1    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker1    12 days ago   Up 2 minutes (healthy)   0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9101->9101/tcp, [::]:9101->9101/tcp
+broker2    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker2    12 days ago   Up 2 minutes (healthy)   0.0.0.0:9094->9094/tcp, [::]:9094->9094/tcp, 9092/tcp, 0.0.0.0:9102->9102/tcp, [::]:9102->9102/tcp
+broker3    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker3    12 days ago   Up 2 minutes (healthy)   0.0.0.0:9096->9096/tcp, [::]:9096->9096/tcp, 9092/tcp, 0.0.0.0:9103->9103/tcp, [::]:9103->9103/tcp
+kafka-ui   ghcr.io/kafbat/kafka-ui:v1.1.0   "/bin/sh -c 'java --…"   kafka-ui   6 days ago    Up 2 minutes             0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp
 estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ kq describe --status
 ClusterId:              dian-kafka-lab-2026
 LeaderId:               3
-LeaderEpoch:            4
-HighWatermark:          6734
+LeaderEpoch:            181
+HighWatermark:          30882
 MaxFollowerLag:         0
-MaxFollowerLagTimeMs:   390
+MaxFollowerLagTimeMs:   481
 CurrentVoters:          [{"id": 1, "directoryId": null, "endpoints": ["CONTROLLER://broker1:9093"]}, {"id": 2, "directoryId": null, "endpoints": ["CONTROLLER://broker2:9093"]}, {"id": 3, "directoryId": null, "endpoints": ["CONTROLLER://broker3:9093"]}]
 CurrentObservers:       []
 estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ kq describe --replication
 NodeId  DirectoryId             LogEndOffset    Lag     LastFetchTimestamp      LastCaughtUpTimestamp   Status  
-3       AAAAAAAAAAAAAAAAAAAAAA  6821            0       1791905666414           1791905666414           Leader  
-1       AAAAAAAAAAAAAAAAAAAAAA  6821            0       1791905666370           1791905666370           Follower
-2       AAAAAAAAAAAAAAAAAAAAAA  6821            0       1791905666369           1791905666369           Follower
+3       AAAAAAAAAAAAAAAAAAAAAA  31750           0       1792506582033           1792506582033           Leader  
+1       AAAAAAAAAAAAAAAAAAAAAA  31750           0       1792506582004           1792506582004           Follower
+2       AAAAAAAAAAAAAAAAAAAAAA  31750           0       1792506582002           1792506582002           Follower
 estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 ls -lh /var/lib/kafka/data/__cluster_metadata-0/
-total 508K
--rw-r--r-- 1 appuser appuser  10M Oct 13 15:35 00000000000000000000.index
--rw-r--r-- 1 appuser appuser 477K Oct 13 15:35 00000000000000000000.log
--rw-r--r-- 1 appuser appuser  10M Oct 13 15:35 00000000000000000000.timeindex
--rw-r--r-- 1 appuser appuser   10 Oct 13 15:30 00000000000000006137.snapshot
--rw-r--r-- 1 appuser appuser   15 Oct 13 15:30 leader-epoch-checkpoint
+total 2.3M
+-rw-r--r-- 1 appuser appuser 3.2K Oct 20 14:20 00000000000000000000.index
+-rw-r--r-- 1 appuser appuser 1.7M Oct 15 14:42 00000000000000000000.log
+-rw-r--r-- 1 appuser appuser 4.9K Oct 20 14:20 00000000000000000000.timeindex
+-r-------- 1 appuser appuser  13K Oct 15 14:14 00000000000000020720-0000000178.checkpoint
+-rw-r--r-- 1 appuser appuser  10M Oct 20 14:31 00000000000000024125.index
+-rw-r--r-- 1 appuser appuser 529K Oct 20 14:31 00000000000000024125.log
+-rw-r--r-- 1 appuser appuser   10 Oct 20 14:20 00000000000000024125.snapshot
+-rw-r--r-- 1 appuser appuser  10M Oct 20 14:31 00000000000000024125.timeindex
+-rw-r--r-- 1 appuser appuser   10 Oct 20 14:20 00000000000000030319.snapshot
+-rw-r--r-- 1 appuser appuser   54 Oct 20 14:20 leader-epoch-checkpoint
 -rw-r--r-- 1 appuser appuser   43 Oct  8 14:42 partition.metadata
--rw-r--r-- 1 appuser appuser  153 Oct 13 15:30 quorum-state
+-rw-r--r-- 1 appuser appuser  155 Oct 20 14:20 quorum-state
 estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-dump-log.sh --cluster-metadata-decoder \
   --files /var/lib/kafka/data/__cluster_metadata-0/00000000000000000000.log | grep -E "TOPIC_RECORD|PARTITION_RECORD|REGISTER_BROKER" | head -20
 | offset: 5 CreateTime: 1791470544607 keySize: -1 valueSize: 144 sequence: -1 headerKeys: [] payload: {"type":"REGISTER_BROKER_RECORD","version":3,"data":{"brokerId":3,"isMigratingZkBroker":false,"incarnationId":"QOU0hYEVRJi5QGk0sb3BsQ","brokerEpoch":5,"endPoints":[{"name":"INTERNAL","host":"broker3","port":19092,"securityProtocol":0},{"name":"EXTERNAL","host":"localhost","port":9096,"securityProtocol":0}],"features":[{"name":"kraft.version","minSupportedVersion":0,"maxSupportedVersion":1},{"name":"metadata.version","minSupportedVersion":1,"maxSupportedVersion":21}],"rack":null,"fenced":true,"inControlledShutdown":false,"logDirs":["Q1M_AUJtSR7Gf2sLoAbgZQ"]}}
@@ -104,91 +104,66 @@ kt --create --topic "$TOPIC" --partitions 3 --replication-factor 3
 docker exec broker1 /opt/kafka/bin/kafka-dump-log.sh --cluster-metadata-decoder \
   --files /var/lib/kafka/data/__cluster_metadata-0/00000000000000000000.log | grep -A3 "$TOPIC" | head -20
 WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
-Created topic equipo01.lab02.declaracion.presentada.
-^[[A^[[A^[[B^[[B^[[B^[[B| offset: 7550 CreateTime: 1791906005615 keySize: -1 valueSize: 58 sequence: -1 headerKeys: [] payload: {"type":"TOPIC_RECORD","version":0,"data":{"name":"equipo01.lab02.declaracion.presentada","topicId":"lAuQ2hT2QJOchOiQm5IQOw"}}
+Error while executing topic command : Topic 'equipo01.lab02.declaracion.presentada' already exists.
+[2026-10-20 14:42:08,201] ERROR org.apache.kafka.common.errors.TopicExistsException: Topic 'equipo01.lab02.declaracion.presentada' already exists.
+ (org.apache.kafka.tools.TopicCommand)
+| offset: 7550 CreateTime: 1791906005615 keySize: -1 valueSize: 58 sequence: -1 headerKeys: [] payload: {"type":"TOPIC_RECORD","version":0,"data":{"name":"equipo01.lab02.declaracion.presentada","topicId":"lAuQ2hT2QJOchOiQm5IQOw"}}
 | offset: 7551 CreateTime: 1791906005615 keySize: -1 valueSize: 113 sequence: -1 headerKeys: [] payload: {"type":"PARTITION_RECORD","version":1,"data":{"partitionId":0,"topicId":"lAuQ2hT2QJOchOiQm5IQOw","replicas":[2,3,1],"isr":[2,3,1],"removingReplicas":[],"addingReplicas":[],"leader":2,"leaderEpoch":0,"partitionEpoch":0,"directories":["Vz_qsX0kB8vZdhD1rtzRIg","Q1M_AUJtSR7Gf2sLoAbgZQ","qwU_AISSfg21UGXAHO3EQg"]}}
 | offset: 7552 CreateTime: 1791906005615 keySize: -1 valueSize: 113 sequence: -1 headerKeys: [] payload: {"type":"PARTITION_RECORD","version":1,"data":{"partitionId":1,"topicId":"lAuQ2hT2QJOchOiQm5IQOw","replicas":[3,1,2],"isr":[3,1,2],"removingReplicas":[],"addingReplicas":[],"leader":3,"leaderEpoch":0,"partitionEpoch":0,"directories":["Q1M_AUJtSR7Gf2sLoAbgZQ","qwU_AISSfg21UGXAHO3EQg","Vz_qsX0kB8vZdhD1rtzRIg"]}}
 | offset: 7553 CreateTime: 1791906005615 keySize: -1 valueSize: 113 sequence: -1 headerKeys: [] payload: {"type":"PARTITION_RECORD","version":1,"data":{"partitionId":2,"topicId":"lAuQ2hT2QJOchOiQm5IQOw","replicas":[1,2,3],"isr":[1,2,3],"removingReplicas":[],"addingReplicas":[],"leader":1,"leaderEpoch":0,"partitionEpoch":0,"directories":["qwU_AISSfg21UGXAHO3EQg","Vz_qsX0kB8vZdhD1rtzRIg","Q1M_AUJtSR7Gf2sLoAbgZQ"]}}
-estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ EQUIPO=equipo09
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ EQUIPO=equipo09                                                        
 TOPIC=$EQUIPO.lab02.declaracion.presentada
 kt --create --topic "$TOPIC" --partitions 3 --replication-factor 3
 docker exec broker1 /opt/kafka/bin/kafka-dump-log.sh --cluster-metadata-decoder \
   --files /var/lib/kafka/data/__cluster_metadata-0/00000000000000000000.log | grep -A3 "$TOPIC" | head -20
 WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
-Created topic equipo09.lab02.declaracion.presentada.
+Error while executing topic command : Topic 'equipo09.lab02.declaracion.presentada' already exists.
+[2026-10-20 14:42:47,825] ERROR org.apache.kafka.common.errors.TopicExistsException: Topic 'equipo09.lab02.declaracion.presentada' already exists.
+ (org.apache.kafka.tools.TopicCommand)
 | offset: 7763 CreateTime: 1791906108592 keySize: -1 valueSize: 58 sequence: -1 headerKeys: [] payload: {"type":"TOPIC_RECORD","version":0,"data":{"name":"equipo09.lab02.declaracion.presentada","topicId":"oZPbkH5DQuiaPgB1YxIQng"}}
 | offset: 7764 CreateTime: 1791906108592 keySize: -1 valueSize: 113 sequence: -1 headerKeys: [] payload: {"type":"PARTITION_RECORD","version":1,"data":{"partitionId":0,"topicId":"oZPbkH5DQuiaPgB1YxIQng","replicas":[3,1,2],"isr":[3,1,2],"removingReplicas":[],"addingReplicas":[],"leader":3,"leaderEpoch":0,"partitionEpoch":0,"directories":["Q1M_AUJtSR7Gf2sLoAbgZQ","qwU_AISSfg21UGXAHO3EQg","Vz_qsX0kB8vZdhD1rtzRIg"]}}
 | offset: 7765 CreateTime: 1791906108592 keySize: -1 valueSize: 113 sequence: -1 headerKeys: [] payload: {"type":"PARTITION_RECORD","version":1,"data":{"partitionId":1,"topicId":"oZPbkH5DQuiaPgB1YxIQng","replicas":[1,2,3],"isr":[1,2,3],"removingReplicas":[],"addingReplicas":[],"leader":1,"leaderEpoch":0,"partitionEpoch":0,"directories":["qwU_AISSfg21UGXAHO3EQg","Vz_qsX0kB8vZdhD1rtzRIg","Q1M_AUJtSR7Gf2sLoAbgZQ"]}}
 | offset: 7766 CreateTime: 1791906108592 keySize: -1 valueSize: 113 sequence: -1 headerKeys: [] payload: {"type":"PARTITION_RECORD","version":1,"data":{"partitionId":2,"topicId":"oZPbkH5DQuiaPgB1YxIQng","replicas":[2,3,1],"isr":[2,3,1],"removingReplicas":[],"addingReplicas":[],"leader":2,"leaderEpoch":0,"partitionEpoch":0,"directories":["Vz_qsX0kB8vZdhD1rtzRIg","Q1M_AUJtSR7Gf2sLoAbgZQ","qwU_AISSfg21UGXAHO3EQg"]}}
-estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ CONTROLADOR=2       # cambie por el LeaderId anotado en el paso 2
-BROKER_VIVO=1       # use 2 o 3 si CONTROLADOR es 1
-date +%T
-docker stop broker$CONTROLADOR
-docker exec broker$BROKER_VIVO /opt/kafka/bin/kafka-metadata-quorum.sh \
-  --bootstrap-server broker$BROKER_VIVO:19092 describe --status
-date +%T
-15:47:00
-broker2
-ClusterId:              dian-kafka-lab-2026
-LeaderId:               3
-LeaderEpoch:            4
-HighWatermark:          8492
-MaxFollowerLag:         7
-MaxFollowerLagTimeMs:   3945
-CurrentVoters:          [{"id": 1, "directoryId": null, "endpoints": ["CONTROLLER://broker1:9093"]}, {"id": 2, "directoryId": null, "endpoints": ["CONTROLLER://broker2:9093"]}, {"id": 3, "directoryId": null, "endpoints": ["CONTROLLER://broker3:9093"]}]
-CurrentObservers:       []
-15:47:07
-estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ CONTROLADOR=2       # cambie por el LeaderId anotado en el paso 2
-BROKER_VIVO=1 
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ SEG=$(docker exec broker1 sh -c 'ls /var/lib/kafka/data/__cluster_metadata-0/*.log | tail -1')
+docker exec broker1 /opt/kafka/bin/kafka-dump-log.sh --cluster-metadata-decoder --files "$SEG" \
+  | grep -E "TOPIC_RECORD|PARTITION_RECORD|REGISTER_BROKER" | head -20
+| offset: 26055 CreateTime: 1792076264291 keySize: -1 valueSize: 144 sequence: -1 headerKeys: [] payload: {"type":"REGISTER_BROKER_RECORD","version":3,"data":{"brokerId":1,"isMigratingZkBroker":false,"incarnationId":"F_5HLYG3ShOMNJ2MWUL2ZA","brokerEpoch":26055,"endPoints":[{"name":"INTERNAL","host":"broker1","port":19092,"securityProtocol":0},{"name":"EXTERNAL","host":"localhost","port":9092,"securityProtocol":0}],"features":[{"name":"kraft.version","minSupportedVersion":0,"maxSupportedVersion":1},{"name":"metadata.version","minSupportedVersion":1,"maxSupportedVersion":21}],"rack":null,"fenced":true,"inControlledShutdown":false,"logDirs":["qwU_AISSfg21UGXAHO3EQg"]}}
+| offset: 30321 CreateTime: 1792506028683 keySize: -1 valueSize: 144 sequence: -1 headerKeys: [] payload: {"type":"REGISTER_BROKER_RECORD","version":3,"data":{"brokerId":2,"isMigratingZkBroker":false,"incarnationId":"LjI1I0nIR76HmRwYiTtrwQ","brokerEpoch":30321,"endPoints":[{"name":"INTERNAL","host":"broker2","port":19092,"securityProtocol":0},{"name":"EXTERNAL","host":"localhost","port":9094,"securityProtocol":0}],"features":[{"name":"kraft.version","minSupportedVersion":0,"maxSupportedVersion":1},{"name":"metadata.version","minSupportedVersion":1,"maxSupportedVersion":21}],"rack":null,"fenced":true,"inControlledShutdown":false,"logDirs":["Vz_qsX0kB8vZdhD1rtzRIg"]}}
+| offset: 30322 CreateTime: 1792506028683 keySize: -1 valueSize: 144 sequence: -1 headerKeys: [] payload: {"type":"REGISTER_BROKER_RECORD","version":3,"data":{"brokerId":1,"isMigratingZkBroker":false,"incarnationId":"b1gK6QxQSgq3Ww0NvNDRoA","brokerEpoch":30322,"endPoints":[{"name":"INTERNAL","host":"broker1","port":19092,"securityProtocol":0},{"name":"EXTERNAL","host":"localhost","port":9092,"securityProtocol":0}],"features":[{"name":"kraft.version","minSupportedVersion":0,"maxSupportedVersion":1},{"name":"metadata.version","minSupportedVersion":1,"maxSupportedVersion":21}],"rack":null,"fenced":true,"inControlledShutdown":false,"logDirs":["qwU_AISSfg21UGXAHO3EQg"]}}
+| offset: 30323 CreateTime: 1792506028683 keySize: -1 valueSize: 144 sequence: -1 headerKeys: [] payload: {"type":"REGISTER_BROKER_RECORD","version":3,"data":{"brokerId":3,"isMigratingZkBroker":false,"incarnationId":"4JnSbboaTDO8BfUzLxhG1Q","brokerEpoch":30323,"endPoints":[{"name":"INTERNAL","host":"broker3","port":19092,"securityProtocol":0},{"name":"EXTERNAL","host":"localhost","port":9096,"securityProtocol":0}],"features":[{"name":"kraft.version","minSupportedVersion":0,"maxSupportedVersion":1},{"name":"metadata.version","minSupportedVersion":1,"maxSupportedVersion":21}],"rack":null,"fenced":true,"inControlledShutdown":false,"logDirs":["Q1M_AUJtSR7Gf2sLoAbgZQ"]}}
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ CONTROLADOR=3
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ BROKER_VIVO=2
 estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ date +%T
-docker stop broker$CONTROLADOR
-docker exec broker$BROKER_VIVO /opt/kafka/bin/kafka-metadata-quorum.sh \
-  --bootstrap-server broker$BROKER_VIVO:19092 describe --status
-date +%T
-15:50:59
-broker2
-org.apache.kafka.common.errors.TimeoutException: Call(callName=describeMetadataQuorum, deadlineMs=1791906723185, tries=1, nextAllowedTryMs=1791906723343) timed out at 1791906723241 after 1 attempt(s)
-java.util.concurrent.ExecutionException: org.apache.kafka.common.errors.TimeoutException: Call(callName=describeMetadataQuorum, deadlineMs=1791906723185, tries=1, nextAllowedTryMs=1791906723343) timed out at 1791906723241 after 1 attempt(s)
-        at java.base/java.util.concurrent.CompletableFuture.reportGet(Unknown Source)
-        at java.base/java.util.concurrent.CompletableFuture.get(Unknown Source)
-        at org.apache.kafka.common.internals.KafkaFutureImpl.get(KafkaFutureImpl.java:165)
-        at org.apache.kafka.tools.MetadataQuorumCommand.handleDescribeStatus(MetadataQuorumCommand.java:251)
-        at org.apache.kafka.tools.MetadataQuorumCommand.execute(MetadataQuorumCommand.java:138)
-        at org.apache.kafka.tools.MetadataQuorumCommand.mainNoExit(MetadataQuorumCommand.java:81)
-        at org.apache.kafka.tools.MetadataQuorumCommand.main(MetadataQuorumCommand.java:76)
-Caused by: org.apache.kafka.common.errors.TimeoutException: Call(callName=describeMetadataQuorum, deadlineMs=1791906723185, tries=1, nextAllowedTryMs=1791906723343) timed out at 1791906723241 after 1 attempt(s)
-Caused by: org.apache.kafka.common.errors.DisconnectException: Cancelled describeMetadataQuorum request with correlation id 4 due to node 1 being disconnected
-
-15:52:03
-estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker$BROKER_VIVO /opt/kafka/bin/kafka-topics.sh \
-  --bootstrap-server broker$BROKER_VIVO:19092 --describe \
-  --topic "$TOPIC"
-dError while executing topic command : java.util.concurrent.ExecutionException: org.apache.kafka.common.errors.TimeoutException: The request timed out.
-[2026-10-13 15:53:40,999] ERROR java.lang.RuntimeException: java.util.concurrent.ExecutionException: org.apache.kafka.common.errors.TimeoutException: The request timed out.
-        at org.apache.kafka.tools.TopicCommand$TopicService.listAllReassignments(TopicCommand.java:551)
-        at org.apache.kafka.tools.TopicCommand$TopicService.describeTopic(TopicCommand.java:613)
-        at org.apache.kafka.tools.TopicCommand.execute(TopicCommand.java:111)
-        at org.apache.kafka.tools.TopicCommand.mainNoExit(TopicCommand.java:90)
-        at org.apache.kafka.tools.TopicCommand.main(TopicCommand.java:85)
-Caused by: java.util.concurrent.ExecutionException: org.apache.kafka.common.errors.TimeoutException: The request timed out.
-        at java.base/java.util.concurrent.CompletableFuture.reportGet(Unknown Source)
-        at java.base/java.util.concurrent.CompletableFuture.get(Unknown Source)
-        at org.apache.kafka.common.internals.KafkaFutureImpl.get(KafkaFutureImpl.java:165)
-        at org.apache.kafka.tools.TopicCommand$TopicService.listAllReassignments(TopicCommand.java:544)
-        ... 4 more
-Caused by: org.apache.kafka.common.errors.TimeoutException: The request timed out.
- (org.apache.kafka.tools.TopicCommand)
-estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker start brocker3
-Error response from daemon: No such container: brocker3
-failed to start containers: brocker3
+14:57:09
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker stop broker$CONTROLADOR
+broker3
 estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker$BROKER_VIVO /opt/kafka/bin/kafka-metadata-quorum.sh \
   --bootstrap-server broker$BROKER_VIVO:19092 describe --status
 ClusterId:              dian-kafka-lab-2026
 LeaderId:               1
-LeaderEpoch:            171
-HighWatermark:          -1
-MaxFollowerLag:         8757
+LeaderEpoch:            182
+HighWatermark:          35227
+MaxFollowerLag:         35228
 MaxFollowerLagTimeMs:   -1
+CurrentVoters:          [{"id": 1, "directoryId": null, "endpoints": ["CONTROLLER://broker1:9093"]}, {"id": 2, "directoryId": null, "endpoints": ["CONTROLLER://broker2:9093"]}, {"id": 3, "directoryId": null, "endpoints": ["CONTROLLER://broker3:9093"]}]
+CurrentObservers:       []
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker$BROKER_VIVO /opt/kafka/bin/kafka-topics.sh \
+  --bootstrap-server broker$BROKER_VIVO:19092 --describe \
+  --topic "$TOPIC"
+Topic: equipo09.lab02.declaracion.presentada    TopicId: oZPbkH5DQuiaPgB1YxIQng PartitionCount: 3       ReplicationFactor: 3    Configs: min.insync.replicas=2,unclean.leader.election.enable=false
+        Topic: equipo09.lab02.declaracion.presentada    Partition: 0    Leader: 1       Replicas: 3,1,2 Isr: 1,2        Elr:    LastKnownElr: 
+        Topic: equipo09.lab02.declaracion.presentada    Partition: 1    Leader: 1       Replicas: 1,2,3 Isr: 1,2        Elr:    LastKnownElr: 
+        Topic: equipo09.lab02.declaracion.presentada    Partition: 2    Leader: 2       Replicas: 2,3,1 Isr: 1,2        Elr:    LastKnownElr: 
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker start broker$CONTROLADOR
+broker3
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 20
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ kq describe --status
+ClusterId:              dian-kafka-lab-2026
+LeaderId:               1
+LeaderEpoch:            182
+HighWatermark:          36397
+MaxFollowerLag:         0
+MaxFollowerLagTimeMs:   0
 CurrentVoters:          [{"id": 1, "directoryId": null, "endpoints": ["CONTROLLER://broker1:9093"]}, {"id": 2, "directoryId": null, "endpoints": ["CONTROLLER://broker2:9093"]}, {"id": 3, "directoryId": null, "endpoints": ["CONTROLLER://broker3:9093"]}]
 CurrentObservers:       []
 estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ printf "830001|{\"nit\":\"830001\",\"formulario\":\"110\",\"periodo\":\"2026-08\"}\n830001|{\"nit\":\"830001\",\"formulario\":\"300\",\"periodo\":\"2026-08\"}\n900123|{\"nit\":\"900123\",\"formulario\":\"110\",\"periodo\":\"2026-08\"}\n" | \
@@ -199,7 +174,10 @@ estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec
   --property print.key=true --property print.partition=true --property print.offset=true 2>/dev/null
 Partition:2     Offset:0        830001  {"nit":"830001","formulario":"110","periodo":"2026-08"}
 Partition:2     Offset:1        830001  {"nit":"830001","formulario":"300","periodo":"2026-08"}
+Partition:2     Offset:2        830001  {"nit":"830001","formulario":"110","periodo":"2026-08"}
+Partition:2     Offset:3        830001  {"nit":"830001","formulario":"300","periodo":"2026-08"}
 Partition:1     Offset:0        900123  {"nit":"900123","formulario":"110","periodo":"2026-08"}
+Partition:1     Offset:1        900123  {"nit":"900123","formulario":"110","periodo":"2026-08"}
 estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server broker1:19092 \
   --topic "$TOPIC" --from-beginning --group "${EQUIPO}-lab02-lector" --timeout-ms 8000 2>/dev/null >/dev/null
 docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group "${EQUIPO}-lab02-lector"
@@ -208,5 +186,7 @@ Consumer group 'equipo09-lab02-lector' has no active members.
 
 GROUP                 TOPIC                                 PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
 equipo09-lab02-lector equipo09.lab02.declaracion.presentada 0          0               0               0               -               -               -
-equipo09-lab02-lector equipo09.lab02.declaracion.presentada 2          2               2               0               -               -               -
-equipo09-lab02-lector equipo09.lab02.declaracion.presentada 1          1               1               0               -               -               -estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ 
+equipo09-lab02-lector equipo09.lab02.declaracion.presentada 2          4               4               0               -               -               -
+equipo09-lab02-lector equipo09.lab02.declaracion.presentada 1          2               2               0               -               -               -estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ kt --list | grep consumer_offsets
+__consumer_offsets
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ 
