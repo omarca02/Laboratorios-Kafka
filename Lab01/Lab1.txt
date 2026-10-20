@@ -1,0 +1,170 @@
+estudiante@ip-192-168-166-41:/home$ ls -l
+total 20
+drwxrws---+ 5 est1       laboratorio 4096 Oct  8 14:28 est1
+drwxrws---+ 5 est2       laboratorio 4096 Oct  8 14:28 est2
+drwxr-x---  8 estudiante estudiante  4096 Oct  6 16:30 estudiante
+drwx------  3 minio-user minio-user  4096 Sep 18 15:13 minio-user
+drwxr-x---  9 ubuntu     ubuntu      4096 Oct  6 19:48 ubuntu
+estudiante@ip-192-168-166-41:/home$ cd est1
+estudiante@ip-192-168-166-41:/home/est1$ ls -l
+total 4
+drwxrws---+ 3 estudiante laboratorio 4096 Oct  8 14:29 equipo09
+estudiante@ip-192-168-166-41:/home/est1$ equipo09
+equipo09: command not found
+estudiante@ip-192-168-166-41:/home/est1$  cd equipo09
+estudiante@ip-192-168-166-41:/home/est1/equipo09$ ls -l
+total 4
+drwxrws---+ 3 estudiante laboratorio 4096 Oct  8 14:29 kafka-dian
+estudiante@ip-192-168-166-41:/home/est1/equipo09$ cd kafka-dian
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian$ ls -l
+total 4
+drwxrws---+ 3 estudiante laboratorio 4096 Oct  8 15:21 entorno
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian$ cd entorno
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ ls -l
+total 12
+-rw-rw----+ 1 estudiante laboratorio 5711 Oct  8 14:31 docker-compose-lab-kafka.yml
+-rw-rw----+ 1 estudiante laboratorio 2963 Oct  8 15:21 gen_eventos.py
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml up -d
+[+] up 5/5
+ ✔ Container broker3          Healthy                                                                                                  25.6s
+ ✔ Container broker1          Healthy                                                                                                  45.6s
+ ✔ Container broker2          Healthy                                                                                                  26.1s
+ ✔ Container kafka-ui         Started                                                                                                   0.3s
+ ✔ Container bootstrap-topics Started                                                                                                   0.2s
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml ps
+NAME       IMAGE                            COMMAND                  SERVICE    CREATED        STATUS                    PORTS
+broker1    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker1    6 days ago     Up 14 minutes (healthy)   0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9101->9101/tcp, [::]:9101->9101/tcp
+broker2    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker2    6 days ago     Up 14 minutes (healthy)   0.0.0.0:9094->9094/tcp, [::]:9094->9094/tcp, 9092/tcp, 0.0.0.0:9102->9102/tcp, [::]:9102->9102/tcp
+broker3    apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker3    6 days ago     Up 14 minutes (healthy)   0.0.0.0:9096->9096/tcp, [::]:9096->9096/tcp, 9092/tcp, 0.0.0.0:9103->9103/tcp, [::]:9103->9103/tcp
+kafka-ui   ghcr.io/kafbat/kafka-ui:v1.1.0   "/bin/sh -c 'java --…"   kafka-ui   46 hours ago   Up 14 minutes             0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ KB=broker1
+kt() { docker exec "$KB" /opt/kafka/bin/kafka-topics.sh --bootstrap-server "$KB":19092 "$@"; }
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ kt --list
+__consumer_offsets
+dian.aduanas.declaracion-importacion
+dian.auditoria.acceso
+dian.declaracion.presentada
+dian.facturacion.emitida
+equipo01.lab02.declaracion.presentada
+equipo08.lab01.facturacion.emitida
+equipo08.lab02.declaracion.presentada
+equipo09.lab01.facturacion.emitida
+equipo09.lab02.declaracion.presentada
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server broker1:19092 | grep -E "^broker[0-9]"
+broker1:19092 (id: 1 rack: null) -> (
+broker2:19092 (id: 2 rack: null) -> (
+broker3:19092 (id: 3 rack: null) -> (
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ TOPIC=equipo01.lab01.facturacion.emitida
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ TOPIC=equipo09.lab01.facturacion.emitida
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ kt --create --topic "$TOPIC" --partitions 3 --replication-factor 3 --config min.insync.replicas=2
+WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+Error while executing topic command : Topic 'equipo09.lab01.facturacion.emitida' already exists.
+[2026-10-15 13:42:32,463] ERROR org.apache.kafka.common.errors.TopicExistsException: Topic 'equipo09.lab01.facturacion.emitida' already exists.
+ (org.apache.kafka.tools.TopicCommand)
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ kt --list | sort
+__consumer_offsets
+dian.aduanas.declaracion-importacion
+dian.auditoria.acceso
+dian.declaracion.presentada
+dian.facturacion.emitida
+equipo01.lab02.declaracion.presentada
+equipo08.lab01.facturacion.emitida
+equipo08.lab02.declaracion.presentada
+equipo09.lab01.facturacion.emitida
+equipo09.lab02.declaracion.presentada
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ kt --describe --topic "$TOPIC"
+Topic: equipo09.lab01.facturacion.emitida       TopicId: 7pLVeSlMQCCjeF1iHoAqEA PartitionCount: 3       ReplicationFactor: 3    Configs: min.insync.replicas=2,unclean.leader.election.enable=false
+        Topic: equipo09.lab01.facturacion.emitida       Partition: 0    Leader: 1       Replicas: 1,2,3 Isr: 1,3,2      Elr:    LastKnownElr: 
+        Topic: equipo09.lab01.facturacion.emitida       Partition: 1    Leader: 2       Replicas: 2,3,1 Isr: 1,2,3      Elr:    LastKnownElr: 
+        Topic: equipo09.lab01.facturacion.emitida       Partition: 2    Leader: 3       Replicas: 3,1,2 Isr: 1,2,3      Elr:    LastKnownElr: 
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ kt --list | sort
+__consumer_offsets
+dian.aduanas.declaracion-importacion
+dian.auditoria.acceso
+dian.declaracion.presentada
+dian.facturacion.emitida
+equipo01.lab02.declaracion.presentada
+equipo08.lab01.facturacion.emitida
+equipo08.lab02.declaracion.presentada
+equipo09.lab01.facturacion.emitida
+equipo09.lab02.declaracion.presentada
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ kt --describe --topic "$TOPIC"
+Topic: equipo09.lab01.facturacion.emitida       TopicId: 7pLVeSlMQCCjeF1iHoAqEA PartitionCount: 3       ReplicationFactor: 3    Configs: min.insync.replicas=2,unclean.leader.election.enable=false
+        Topic: equipo09.lab01.facturacion.emitida       Partition: 0    Leader: 1       Replicas: 1,2,3 Isr: 1,3,2      Elr:    LastKnownElr: 
+        Topic: equipo09.lab01.facturacion.emitida       Partition: 1    Leader: 2       Replicas: 2,3,1 Isr: 1,2,3      Elr:    LastKnownElr: 
+        Topic: equipo09.lab01.facturacion.emitida       Partition: 2    Leader: 3       Replicas: 3,1,2 Isr: 1,2,3      Elr:    LastKnownElr: 
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ python3 ../codigo/gen_eventos.py --topic "$TOPIC" --n 100
+python3: can't open file '/home/est1/equipo09/kafka-dian/entorno/../codigo/gen_eventos.py': [Errno 2] No such file or directory
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ python3 -m venv .venv
+source .venv/bin/activate
+pip install confluent-kafka
+python3 archivo.py
+Requirement already satisfied: confluent-kafka in ./.venv/lib/python3.12/site-packages (2.16.0)
+python3: can't open file '/home/est1/equipo09/kafka-dian/entorno/archivo.py': [Errno 2] No such file or directory
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for i in $(seq 1 100); do echo "900${i}|{\"nit\":\"900${i}\",\"valor\":$((RANDOM*10)),\"n\":$i}"; done | \
+docker exec -i broker1 /opt/kafka/bin/kafka-console-producer.sh --bootstrap-server broker1:19092 \
+  --topic "$TOPIC" --property parse.key=true --property key.separator="|"
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec brokerN ls -lh /var/lib/kafka/data/${TOPIC}-0/
+Error response from daemon: No such container: brokerN
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 ls -lh /var/lib/kafka/data/${TOPIC}-0/
+total 20K
+-rw-r--r-- 1 appuser appuser  10M Oct 15 13:14 00000000000000000000.index
+-rw-r--r-- 1 appuser appuser 3.6K Oct 15 14:31 00000000000000000000.log
+-rw-r--r-- 1 appuser appuser  10M Oct 15 13:14 00000000000000000000.timeindex
+-rw-r--r-- 1 appuser appuser   56 Oct  8 15:07 00000000000000000036.snapshot
+-rw-r--r-- 1 appuser appuser   13 Oct 15 13:14 leader-epoch-checkpoint
+-rw-r--r-- 1 appuser appuser   43 Oct  8 14:48 partition.metadata
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-dump-log.sh --print-da
+ta-log \
+  --files /var/lib/kafka/data/${TOPIC}-0/00000000000000000000.log | head -20
+Dumping /var/lib/kafka/data/equipo09.lab01.facturacion.emitida-0/00000000000000000000.log
+Log starting offset: 0
+baseOffset: 0 lastOffset: 35 count: 36 baseSequence: 0 lastSequence: 35 producerId: 1000 producerEpoch: 0 partitionLeaderEpoch: 0 isTransactional: false isControl: false deleteHorizonMs: OptionalLong.empty position: 0 CreateTime: 1791471463073 size: 1820 magic: 2 compresscodec: none crc: 3265990039 isvalid: true
+| offset: 0 CreateTime: 1791471463007 keySize: 4 valueSize: 35 sequence: 0 headerKeys: [] key: 9001 payload: {"nit":"9001","valor":272450,"n":1}
+| offset: 1 CreateTime: 1791471463063 keySize: 4 valueSize: 35 sequence: 1 headerKeys: [] key: 9005 payload: {"nit":"9005","valor":263720,"n":5}
+| offset: 2 CreateTime: 1791471463063 keySize: 5 valueSize: 37 sequence: 2 headerKeys: [] key: 90010 payload: {"nit":"90010","valor":240510,"n":10}
+| offset: 3 CreateTime: 1791471463064 keySize: 5 valueSize: 36 sequence: 3 headerKeys: [] key: 90016 payload: {"nit":"90016","valor":14050,"n":16}
+| offset: 4 CreateTime: 1791471463065 keySize: 5 valueSize: 36 sequence: 4 headerKeys: [] key: 90021 payload: {"nit":"90021","valor":26030,"n":21}
+| offset: 5 CreateTime: 1791471463065 keySize: 5 valueSize: 37 sequence: 5 headerKeys: [] key: 90023 payload: {"nit":"90023","valor":142160,"n":23}
+| offset: 6 CreateTime: 1791471463065 keySize: 5 valueSize: 37 sequence: 6 headerKeys: [] key: 90024 payload: {"nit":"90024","valor":276990,"n":24}
+| offset: 7 CreateTime: 1791471463065 keySize: 5 valueSize: 37 sequence: 7 headerKeys: [] key: 90027 payload: {"nit":"90027","valor":274390,"n":27}
+| offset: 8 CreateTime: 1791471463066 keySize: 5 valueSize: 37 sequence: 8 headerKeys: [] key: 90030 payload: {"nit":"90030","valor":213530,"n":30}
+| offset: 9 CreateTime: 1791471463066 keySize: 5 valueSize: 35 sequence: 9 headerKeys: [] key: 90032 payload: {"nit":"90032","valor":2990,"n":32}
+| offset: 10 CreateTime: 1791471463066 keySize: 5 valueSize: 37 sequence: 10 headerKeys: [] key: 90034 payload: {"nit":"90034","valor":287270,"n":34}
+| offset: 11 CreateTime: 1791471463067 keySize: 5 valueSize: 36 sequence: 11 headerKeys: [] key: 90038 payload: {"nit":"90038","valor":94130,"n":38}
+| offset: 12 CreateTime: 1791471463067 keySize: 5 valueSize: 35 sequence: 12 headerKeys: [] key: 90041 payload: {"nit":"90041","valor":3450,"n":41}
+| offset: 13 CreateTime: 1791471463067 keySize: 5 valueSize: 37 sequence: 13 headerKeys: [] key: 90042 payload: {"nit":"90042","valor":131760,"n":42}
+| offset: 14 CreateTime: 1791471463067 keySize: 5 valueSize: 37 sequence: 14 headerKeys: [] key: 90044 payload: {"nit":"90044","valor":315430,"n":44}
+| offset: 15 CreateTime: 1791471463067 keySize: 5 valueSize: 37 sequence: 15 headerKeys: [] key: 90045 payload: {"nit":"90045","valor":153170,"n":45}
+| offset: 16 CreateTime: 1791471463067 keySize: 5 valueSize: 37 sequence: 16 headerKeys: [] key: 90047 payload: {"nit":"90047","valor":256100,"n":47}
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker stop broker1
+broker1
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 10
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ KB=broker2
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ kt --describe --topic "$TOPIC"
+Topic: equipo09.lab01.facturacion.emitida       TopicId: 7pLVeSlMQCCjeF1iHoAqEA PartitionCount: 3       ReplicationFactor: 3    Configs: min.insync.replicas=2,unclean.leader.election.enable=false
+        Topic: equipo09.lab01.facturacion.emitida       Partition: 0    Leader: 2       Replicas: 1,2,3 Isr: 3,2        Elr:    LastKnownElr: 
+        Topic: equipo09.lab01.facturacion.emitida       Partition: 1    Leader: 2       Replicas: 2,3,1 Isr: 2,3        Elr:    LastKnownElr: 
+        Topic: equipo09.lab01.facturacion.emitida       Partition: 2    Leader: 3       Replicas: 3,1,2 Isr: 2,3        Elr:    LastKnownElr: 
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ python3 ../codigo/gen_eventos.py --topic "$TOPIC" --n 10
+python3: can't open file '/home/est1/equipo09/kafka-dian/entorno/../codigo/gen_eventos.py': [Errno 2] No such file or directory
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for i in $(seq 1 10); do echo "900${i}|{\"nit\":\"900${i}\",\"v
+alor\":$((RANDOM*10)),\"n\":$i}"; done | \
+docker exec -i broker1 /opt/kafka/bin/kafka-console-producer.sh --bootstrap-server broker1:19092 \
+  --topic "$TOPIC" --property parse.key=true --property key.separator="|"
+Error response from daemon: container bf5b8369fd4e6a8eb5ea456fc99a046bf71cefd327cdc31e32c537b55c057a06 is not running
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for i in $(seq 1 10); do echo "900${i}|{\"nit\":\"900${i}\",\"valor\":$((RANDOM*10)),\"n\":$i}"; done | docker exec -i broker2 /opt/kafka/bin/kafka-console-producer.sh --bootstrap-server broker2:19092   
+--topic "$TOPIC" --property parse.key=true --property key.separator="|"
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker start broker1
+sleep 20
+kt --describe --topic "$TOPIC"
+broker1
+Topic: equipo09.lab01.facturacion.emitida       TopicId: 7pLVeSlMQCCjeF1iHoAqEA PartitionCount: 3       ReplicationFactor: 3    Configs: min.insync.replicas=2,unclean.leader.election.enable=false
+        Topic: equipo09.lab01.facturacion.emitida       Partition: 0    Leader: 2       Replicas: 1,2,3 Isr: 3,2,1      Elr:    LastKnownElr: 
+        Topic: equipo09.lab01.facturacion.emitida       Partition: 1    Leader: 2       Replicas: 2,3,1 Isr: 2,3,1      Elr:    LastKnownElr: 
+        Topic: equipo09.lab01.facturacion.emitida       Partition: 2    Leader: 3       Replicas: 3,1,2 Isr: 2,3,1      Elr:    LastKnownElr: 
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server broker1:19092 \
+  --topic "$TOPIC" --from-beginning --timeout-ms 10000 2>/dev/null | wc -l
+210
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ ^C
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ 
