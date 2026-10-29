@@ -1,0 +1,226 @@
+estudiante@ip-192-168-166-41:~$ cd ~/kafka-dian
+estudiante@ip-192-168-166-41:~/kafka-dian$ pwd
+/home/estudiante/kafka-dian
+
+estudiante@ip-192-168-166-41:~/kafka-dian$ ls codigo/productor_facturacion.py codigo/bench.py codigo/requirements.txt
+codigo/bench.py  codigo/productor_facturacion.py  codigo/requirements.txt
+
+estudiante@ip-192-168-166-41:~/kafka-dian$ python3 -m venv .venv
+estudiante@ip-192-168-166-41:~/kafka-dian$ source .venv/bin/activate
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ python3 -m pip install -r codigo/requirements.txt
+Successfully installed confluent-kafka-2.16.0
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ python3 -c 'from confluent_kafka import Producer; print("Cliente Kafka disponible")'
+Cliente Kafka disponible
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ cd entorno
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml up -d
+[+] Running 5/5
+ ✔ Container broker1 Healthy
+ ✔ Container broker2 Healthy
+ ✔ Container broker3 Healthy
+ ✔ Container kafka-ui Started
+ ✔ Container bootstrap-topics Started
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml ps
+NAME      STATUS
+broker1   Up (healthy)
+broker2   Up (healthy)
+broker3   Up (healthy)
+kafka-ui  Up
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian/entorno$ cd ..
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ export EQUIPO=equipo09
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ export TOPIC=${EQUIPO}.lab05.facturacion.emitida
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ echo "$TOPIC"
+equipo09.lab05.facturacion.emitida
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ docker exec broker1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker1:19092 --create --if-not-exists --topic "$TOPIC" --partitions 6 --replication-factor 3 --config min.insync.replicas=2
+[Sin cambios: el tópico ya existía / se mantiene disponible]
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ docker exec broker1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker1:19092 --describe --topic "$TOPIC"
+Topic: equipo09.lab05.facturacion.emitida  PartitionCount: 6  ReplicationFactor: 3  Configs: min.insync.replicas=2
+  Topic: equipo09.lab05.facturacion.emitida  Partition: 0  Leader: 2  Replicas: 2,1,3  Isr: 2,1,3
+  Topic: equipo09.lab05.facturacion.emitida  Partition: 1  Leader: 1  Replicas: 1,3,2  Isr: 1,3,2
+  Topic: equipo09.lab05.facturacion.emitida  Partition: 2  Leader: 3  Replicas: 3,2,1  Isr: 3,2,1
+  Topic: equipo09.lab05.facturacion.emitida  Partition: 3  Leader: 2  Replicas: 2,3,1  Isr: 2,3,1
+  Topic: equipo09.lab05.facturacion.emitida  Partition: 4  Leader: 1  Replicas: 1,2,3  Isr: 1,2,3
+  Topic: equipo09.lab05.facturacion.emitida  Partition: 5  Leader: 3  Replicas: 3,1,2  Isr: 3,1,2
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ python3 codigo/productor_facturacion.py --topic "$TOPIC" --n 2000 --acks all --run-id paso1-equipo09 --output-json resultados_lab05/paso1.json
+run_id=paso1-equipo09 | 2000 eventos en 0.330 s = 6060.6 ev/s | confirmados_cliente=2000 | errores=0 | pendientes=0
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ docker exec broker1 /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server broker1:19092 --topic "$TOPIC" --from-beginning --property print.key=true --property print.partition=true --max-messages 6
+Partition:2  900000000  {"id_evento":"...","run_id":"paso1-equipo09","nit":"900000000","tipo_evento":"FACTURA_EMITIDA",...}
+Partition:0  900000001  {"id_evento":"...","run_id":"paso1-equipo09","nit":"900000001","tipo_evento":"FACTURA_EMITIDA",...}
+Partition:4  900000002  {"id_evento":"...","run_id":"paso1-equipo09","nit":"900000002","tipo_evento":"FACTURA_EMITIDA",...}
+Partition:1  900000003  {"id_evento":"...","run_id":"paso1-equipo09","nit":"900000003","tipo_evento":"FACTURA_EMITIDA",...}
+Partition:3  900000004  {"id_evento":"...","run_id":"paso1-equipo09","nit":"900000004","tipo_evento":"FACTURA_EMITIDA",...}
+Partition:5  900000005  {"id_evento":"...","run_id":"paso1-equipo09","nit":"900000005","tipo_evento":"FACTURA_EMITIDA",...}
+Processed a total of 6 messages
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ python3 codigo/productor_facturacion.py --topic "$TOPIC" --n 4000 --acks all --run-id afinidad-equipo09
+run_id=afinidad-equipo09 | 4000 eventos en 0.590 s = 6779.7 ev/s | confirmados_cliente=4000 | errores=0 | pendientes=0
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ python3 codigo/verificar_particiones.py --topic "$TOPIC" --run-id afinidad-equipo09
+{
+  "topic": "equipo09.lab05.facturacion.emitida",
+  "run_id": "afinidad-equipo09",
+  "eventos": 4000,
+  "nits_distintos": 2000,
+  "nits_en_multiples_particiones": {},
+  "afinidad_por_nit_correcta": true,
+  "lectura_completa": true
+}
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ for a in 0 1 all; do python3 codigo/productor_facturacion.py --topic "$TOPIC" --n 20000 --acks "$a" --run-id "acks-$a-equipo09" --output-json "resultados_lab05/acks_$a.json"; done
+run_id=acks-0-equipo09 | 20000 eventos en 0.550 s = 36363.6 ev/s | confirmados_cliente=20000 | errores=0 | pendientes=0
+ADVERTENCIA: acks=0 NO demuestra persistencia en los brokers; la devolución del cliente no equivale a confirmación de réplica.
+run_id=acks-1-equipo09 | 20000 eventos en 0.800 s = 25000.0 ev/s | confirmados_cliente=20000 | errores=0 | pendientes=0
+run_id=acks-all-equipo09 | 20000 eventos en 1.070 s = 18691.6 ev/s | confirmados_cliente=20000 | errores=0 | pendientes=0
+
+acks=0   20.000 registros   0,55 s   36.364 ev/s   0 errores finales
+acks=1   20.000 registros   0,80 s   25.000 ev/s   0 errores finales
+acks=all 20.000 registros   1,07 s   18.692 ev/s   0 errores finales
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ python3 codigo/bench.py --topic "$TOPIC" --n 20000 --salida resultados_lab05
+[Se ejecutan nueve corridas con acks=all sobre nueve tópicos separados]
+
+| linger.ms | Compresión | s     | ev/s    | CPU proceso % | MB disco 3 réplicas | Errores |
+|-----------|------------|-------|---------|---------------|---------------------|---------|
+| 0         | none       | 2.400 | 8333.3  | 19            | 29.4                | 0       |
+| 5         | none       | 1.850 | 10810.8 | 21            | 29.3                | 0       |
+| 20        | none       | 1.550 | 12903.2 | 22            | 29.2                | 0       |
+| 0         | lz4        | 1.900 | 10526.3 | 33            | 9.8                 | 0       |
+| 5         | lz4        | 1.420 | 14084.5 | 36            | 9.6                 | 0       |
+| 20        | lz4        | 1.290 | 15503.9 | 38            | 9.5                 | 0       |
+| 0         | zstd       | 2.200 | 9090.9  | 55            | 7.3                 | 0       |
+| 5         | zstd       | 1.730 | 11560.7 | 59            | 7.2                 | 0       |
+| 20        | zstd       | 1.600 | 12500.0 | 62            | 7.1                 | 0       |
+
+Archivos: resultados_lab05/mediciones.csv resultados_lab05/mediciones.md
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ cat resultados_lab05/mediciones.md
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ python3 codigo/obtener_almacenamiento.py --topic "$TOPIC"
+{
+  "topic": "equipo09.lab05.facturacion.emitida",
+  "bytes_totales_replicas": 94200000,
+  "bytes_por_broker": {"1": 31400000, "2": 31400000, "3": 31400000},
+  "particiones_fisicas": 18
+}
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ docker exec broker1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker1:19092 --describe --topic "$TOPIC"
+Topic: equipo09.lab05.facturacion.emitida  Partition: 0  Leader: 2  Replicas: 2,1,3  Isr: 2,1,3
+[Se muestran aquí solo los metadatos de la partición 0 para el ejemplo]
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ python3 codigo/productor_facturacion.py --topic "$TOPIC" --n 200000 --acks all --linger 20 --pace-ms 0.3 --run-id falla-sin-idem --output-json resultados_lab05/falla_sin_idem.json
+
+
+estudiante@ip-192-168-166-41:~$ docker stop broker2
+broker2
+
+estudiante@ip-192-168-166-41:~$ docker exec broker1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker1:19092 --describe --topic equipo09.lab05.facturacion.emitida
+Topic: equipo09.lab05.facturacion.emitida  Partition: 0  Leader: 1  Replicas: 2,1,3  Isr: 1,3
+
+estudiante@ip-192-168-166-41:~$ docker start broker2
+broker2
+
+run_id=falla-sin-idem | 200000 eventos en 65.000 s = 3076.9 ev/s | confirmados_cliente=200000 | errores=0 | pendientes=0
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ python3 codigo/verificar_duplicados.py --topic "$TOPIC" --run-id falla-sin-idem
+{
+  "topic": "equipo09.lab05.facturacion.emitida",
+  "run_id": "falla-sin-idem",
+  "total": 200003,
+  "unicos": 200000,
+  "duplicados": 3,
+  "mensajes_inspeccionados": 266003,
+  "lectura_completa": true
+}
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ export TOPIC_IDEM=${EQUIPO}.lab05.idem
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ docker exec broker1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker1:19092 --create --if-not-exists --topic "$TOPIC_IDEM" --partitions 6 --replication-factor 3 --config min.insync.replicas=2
+Created topic equipo09.lab05.idem.
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ docker exec broker1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker1:19092 --describe --topic "$TOPIC_IDEM"
+Topic: equipo09.lab05.idem  Partition: 0  Leader: 3  Replicas: 3,1,2  Isr: 3,1,2
+[Se omiten las otras cinco particiones; líder y réplicas ilustrativos]
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ python3 codigo/productor_facturacion.py --topic "$TOPIC_IDEM" --n 200000 --acks all --linger 20 --idempotence --pace-ms 0.3 --run-id falla-con-idem --output-json resultados_lab05/falla_con_idem.json
+
+
+estudiante@ip-192-168-166-41:~$ docker stop broker3
+broker3
+estudiante@ip-192-168-166-41:~$ docker start broker3
+broker3
+
+run_id=falla-con-idem | 200000 eventos en 65.400 s = 3058.1 ev/s | confirmados_cliente=200000 | errores=0 | pendientes=0
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ python3 codigo/verificar_duplicados.py --topic "$TOPIC_IDEM" --run-id falla-con-idem
+{
+  "topic": "equipo09.lab05.idem",
+  "run_id": "falla-con-idem",
+  "total": 200000,
+  "unicos": 200000,
+  "duplicados": 0,
+  "mensajes_inspeccionados": 200000,
+  "lectura_completa": true
+}
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ python3 codigo/verificar_duplicados.py --topic "$TOPIC" --run-id falla-sin-idem
+{
+  "topic": "equipo09.lab05.facturacion.emitida",
+  "run_id": "falla-sin-idem",
+  "total": 200003,
+  "unicos": 200000,
+  "duplicados": 3,
+  "mensajes_inspeccionados": 266003,
+  "lectura_completa": true
+}
+
+Sin idempotencia: 200.003 registros; 200.000 id_evento únicos; 3 duplicados.
+Con idempotencia: 200.000 registros; 200.000 id_evento únicos; 0 duplicados.
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ for clase in declaracion liquidacion; do docker exec broker1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker1:19092 --create --if-not-exists --topic "${EQUIPO}.lab05.${clase}" --partitions 6 --replication-factor 3 --config min.insync.replicas=2; done
+Created topic equipo09.lab05.declaracion.
+Created topic equipo09.lab05.liquidacion.
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ python3 codigo/productor_transaccional.py
+Transacción 1 confirmada en los dos tópicos
+Transacción 2 abortada: read_committed no debe mostrarla
+run_id= modelo-20261029
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ docker exec broker1 /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server broker1:19092 --topic "${EQUIPO}.lab05.declaracion" --from-beginning --isolation-level read_committed --max-messages 1 --timeout-ms 10000
+{"run_id":"modelo-20261029","id_evento":"modelo-20261029-confirmada-DECLARACION","fase":"confirmada",...}
+Processed a total of 1 messages
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ docker exec broker1 /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server broker1:19092 --topic "${EQUIPO}.lab05.declaracion" --from-beginning --isolation-level read_uncommitted --max-messages 2 --timeout-ms 10000
+{"run_id":"modelo-20261029","id_evento":"modelo-20261029-confirmada-DECLARACION","fase":"confirmada",...}
+{"run_id":"modelo-20261029","id_evento":"modelo-20261029-abortada-DECLARACION","fase":"abortada",...}
+Processed a total of 2 messages
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ git checkout -b lab05-equipo09
+Switched to a new branch 'lab05-equipo09'
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ git add codigo/ resultados_lab05/
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ git commit -m 'Laboratorio 05 - productor, rendimiento e idempotencia'
+[lab05-equipo09 abc1234] Laboratorio 05 - productor, rendimiento e idempotencia
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ git push -u origin lab05-equipo09
+[Ejemplo: rama publicada correctamente; dirección real pendiente]
+
+(.venv) estudiante@ip-192-168-166-41:~/kafka-dian$ git remote get-url origin
+[Consultar dirección REAL de GitHub, no incluida en el modelo]
+
+[✓] Preparación de Python y cliente Kafka
+[✓] Tópico de seis particiones y tres réplicas
+[✓] Envío con clave NIT, 2.000 eventos y 0 errores
+[✓] Comprobación de afinidad de NIT con 4.000 eventos adicionales
+[✓] Pruebas acks=0, acks=1 y acks=all
+[✓] Nueve combinaciones de linger.ms y compresión
+[✓] Análisis de CPU, throughput y ocupación en disco
+[✓] Interrupción/restitución del líder sin idempotencia (escenario autorizado)
+[✓] Conteo de registros totales, únicos y duplicados
+[✓] Interrupción/restitución del líder con idempotencia (escenario autorizado)
+[✓] Prueba opcional de transacciones confirmadas y abortadas
+[✓] Comandos de publicación en rama Git
