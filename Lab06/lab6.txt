@@ -1,0 +1,285 @@
+estudiante@ip-192-168-166-41:/home$ ls -l
+total 20
+drwxrws---+ 5 est1       laboratorio 4096 Oct  8 14:28 est1
+drwxrws---+ 5 est2       laboratorio 4096 Oct  8 14:28 est2
+drwxr-x---  8 estudiante estudiante  4096 Oct  6 16:30 estudiante
+drwx------  3 minio-user minio-user  4096 Sep 18 15:13 minio-user
+drwxr-x---  9 ubuntu     ubuntu      4096 Oct  6 19:48 ubuntu
+estudiante@ip-192-168-166-41:/home$ cd est1
+estudiante@ip-192-168-166-41:/home/est1$ ls -l
+total 4
+drwxrws---+ 3 estudiante laboratorio 4096 Oct  8 14:29 equipo09
+estudiante@ip-192-168-166-41:/home/est1$ cd equipo09
+estudiante@ip-192-168-166-41:/home/est1/equipo09$ ls -l
+total 4
+drwxrws---+ 3 estudiante laboratorio 4096 Oct  8 14:29 kafka-dian
+estudiante@ip-192-168-166-41:/home/est1/equipo09$ cd kafka-dian
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian$ cd entorno
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml ps
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml up -d
+docker compose -f docker-compose-lab-kafka.yml ps
+[+] up 5/5
+ ✔ Container broker3          Healthy                                      45.9s
+ ✔ Container broker1          Healthy                                      46.4s
+ ✔ Container broker2          Healthy                                      46.9s
+ ✔ Container kafka-ui         Started                                       0.4s
+ ✔ Container bootstrap-topics Started                                       0.3s
+NAME               IMAGE                            COMMAND                  SERVICE            CREATED       STATUS                    PORTS
+bootstrap-topics   apache/kafka:3.9.0               "/bin/bash -c 'B=bro…"   bootstrap-topics   3 weeks ago   Up Less than a second     9092/tcp
+broker1            apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker1            3 weeks ago   Up 46 seconds (healthy)   0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9101->9101/tcp, [::]:9101->9101/tcp
+broker2            apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker2            3 weeks ago   Up 46 seconds (healthy)   0.0.0.0:9094->9094/tcp, [::]:9094->9094/tcp, 9092/tcp, 0.0.0.0:9102->9102/tcp, [::]:9102->9102/tcp
+broker3            apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker3            3 weeks ago   Up 47 seconds (healthy)   0.0.0.0:9096->9096/tcp, [::]:9096->9096/tcp, 9092/tcp, 0.0.0.0:9103->9103/tcp, [::]:9103->9103/tcp
+kafka-ui           ghcr.io/kafbat/kafka-ui:v1.1.0   "/bin/sh -c 'java --…"   kafka-ui           2 weeks ago   Up 45 seconds             0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ EQUIPO=equipo09
+TOPIC=$EQUIPO.lab05.facturacion.emitida
+GROUP=${EQUIPO}-lab06-sink
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml -f docker-compose.override.yml up -d
+compose file "/home/est1/equipo09/kafka-dian/entorno/docker-compose.override.yml" is invalid: open /home/est1/equipo09/kafka-dian/entorno/docker-compose.override.yml: no such file or directory
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml -f docker-compose.override.yml up -d
+compose file "/home/est1/equipo09/kafka-dian/entorno/docker-compose.override.yml" is invalid: open /home/est1/equipo09/kafka-dian/entorno/docker-compose.override.yml: no such file or directory
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml -f docker-compose.override.yml up -d
+[+] up 6/6
+ ✔ Container kafka-ui         Running                                                                                                   0.0s
+ ✔ Container broker1          Healthy                                                                                                   0.6s
+ ✔ Container broker2          Healthy                                                                                                   0.6s
+ ✔ Container broker3          Healthy                                                                                                   0.6s
+ ✔ Container postgres         Started                                                                                                   0.2s
+ ✔ Container bootstrap-topics Started                                                                                                   0.4s
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ python3 consumidor_facturacion.py --topic "$TOPIC" --group "$GROUP"
+Traceback (most recent call last):
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_facturacion.py", line 6, in <module>
+    import psycopg2
+ModuleNotFoundError: No module named 'psycopg2'
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml -f docker-compose.override.yml up -d
+[+] up 5/6
+ ✔ Container broker3          Healthy                                                                                                   1.1s
+ ✔ Container kafka-ui         Running                                                                                                   0.0s
+ ✔ Container broker1          Healthy                                                                                                   1.1s
+ ✔ Container broker2          Healthy                                                                                                   1.1s
+ ⠸ Container postgres         Starting                                                                                                  1.3s
+ ✔ Container bootstrap-topics Started                                                                                                   0.2s
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint postgres (11d5cf12e3b3ea5169bdd41fdf947e5b5131dec5fd9f74374e916d05096c5d17): failed to bind host port 0.0.0.0:5432/tcp: address already in use
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker ps
+CONTAINER ID   IMAGE                            COMMAND                  CREATED         STATUS                    PORTS                                                                                                NAMES
+3fd7d10591de   postgres:16                      "docker-entrypoint.s…"   2 minutes ago   Up About a minute                                                                                                              postgres
+7963f2c5a952   ghcr.io/kafbat/kafka-ui:v1.1.0   "/bin/sh -c 'java --…"   2 weeks ago     Up 20 minutes             0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp                                                          kafka-ui
+bf5b8369fd4e   apache/kafka:3.9.0               "/__cacert_entrypoin…"   3 weeks ago     Up 20 minutes (healthy)   0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9101->9101/tcp, [::]:9101->9101/tcp             broker1
+2d3a4d703a57   apache/kafka:3.9.0               "/__cacert_entrypoin…"   3 weeks ago     Up 20 minutes (healthy)   0.0.0.0:9096->9096/tcp, [::]:9096->9096/tcp, 9092/tcp, 0.0.0.0:9103->9103/tcp, [::]:9103->9103/tcp   broker3
+356ace349edb   apache/kafka:3.9.0               "/__cacert_entrypoin…"   3 weeks ago     Up 20 minutes (healthy)   0.0.0.0:9094->9094/tcp, [::]:9094->9094/tcp, 9092/tcp, 0.0.0.0:9102->9102/tcp, [::]:9102->9102/tcp   broker2
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ 
+
+
+
+
+
+estudiante@ip-192-168-166-41:/home$ ls -l
+total 20
+drwxrws---+ 5 est1       laboratorio 4096 Oct  8 14:28 est1
+drwxrws---+ 5 est2       laboratorio 4096 Oct  8 14:28 est2
+drwxr-x---  8 estudiante estudiante  4096 Oct  6 16:30 estudiante
+drwx------  3 minio-user minio-user  4096 Sep 18 15:13 minio-user
+drwxr-x---  9 ubuntu     ubuntu      4096 Oct  6 19:48 ubuntu
+estudiante@ip-192-168-166-41:/home$ cd est1
+estudiante@ip-192-168-166-41:/home/est1$ ls -l
+total 4
+drwxrws---+ 3 estudiante laboratorio 4096 Oct  8 14:29 equipo09
+estudiante@ip-192-168-166-41:/home/est1$ cd equipo09
+estudiante@ip-192-168-166-41:/home/est1/equipo09$ ls -l
+total 4
+drwxrws---+ 3 estudiante laboratorio 4096 Oct  8 14:29 kafka-dian
+estudiante@ip-192-168-166-41:/home/est1/equipo09$ cd kafka-dian
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian$ cd entorno
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml ps
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml up -d
+docker compose -f docker-compose-lab-kafka.yml ps
+[+] up 5/5
+ ✔ Container broker3          Healthy                                      45.9s
+ ✔ Container broker1          Healthy                                      46.4s
+ ✔ Container broker2          Healthy                                      46.9s
+ ✔ Container kafka-ui         Started                                       0.4s
+ ✔ Container bootstrap-topics Started                                       0.3s
+NAME               IMAGE                            COMMAND                  SERVICE            CREATED       STATUS                    PORTS
+bootstrap-topics   apache/kafka:3.9.0               "/bin/bash -c 'B=bro…"   bootstrap-topics   3 weeks ago   Up Less than a second     9092/tcp
+broker1            apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker1            3 weeks ago   Up 46 seconds (healthy)   0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9101->9101/tcp, [::]:9101->9101/tcp
+broker2            apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker2            3 weeks ago   Up 46 seconds (healthy)   0.0.0.0:9094->9094/tcp, [::]:9094->9094/tcp, 9092/tcp, 0.0.0.0:9102->9102/tcp, [::]:9102->9102/tcp
+broker3            apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker3            3 weeks ago   Up 47 seconds (healthy)   0.0.0.0:9096->9096/tcp, [::]:9096->9096/tcp, 9092/tcp, 0.0.0.0:9103->9103/tcp, [::]:9103->9103/tcp
+kafka-ui           ghcr.io/kafbat/kafka-ui:v1.1.0   "/bin/sh -c 'java --…"   kafka-ui           2 weeks ago   Up 45 seconds             0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ EQUIPO=equipo09
+TOPIC=$EQUIPO.lab05.facturacion.emitida
+GROUP=${EQUIPO}-lab06-sink
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml -f docker-compose.override.yml up -d
+compose file "/home/est1/equipo09/kafka-dian/entorno/docker-compose.override.yml" is invalid: open /home/est1/equipo09/kafka-dian/entorno/docker-compose.override.yml: no such file or directory
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml -f docker-compose.override.yml up -d
+compose file "/home/est1/equipo09/kafka-dian/entorno/docker-compose.override.yml" is invalid: open /home/est1/equipo09/kafka-dian/entorno/docker-compose.override.yml: no such file or directory
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml -f docker-compose.override.yml up -d
+[+] up 6/6
+ ✔ Container kafka-ui         Running                                                                                                   0.0s
+ ✔ Container broker1          Healthy                                                                                                   0.6s
+ ✔ Container broker2          Healthy                                                                                                   0.6s
+ ✔ Container broker3          Healthy                                                                                                   0.6s
+ ✔ Container postgres         Started                                                                                                   0.2s
+ ✔ Container bootstrap-topics Started                                                                                                   0.4s
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ python3 consumidor_facturacion.py --topic "$TOPIC" --group "$GROUP"
+Traceback (most recent call last):
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_facturacion.py", line 6, in <module>
+    import psycopg2
+ModuleNotFoundError: No module named 'psycopg2'
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml -f docker-compose.override.yml up -d
+[+] up 5/6
+ ✔ Container broker3          Healthy                                                                                                   1.1s
+ ✔ Container kafka-ui         Running                                                                                                   0.0s
+ ✔ Container broker1          Healthy                                                                                                   1.1s
+ ✔ Container broker2          Healthy                                                                                                   1.1s
+ ⠸ Container postgres         Starting                                                                                                  1.3s
+ ✔ Container bootstrap-topics Started                                                                                                   0.2s
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint postgres (11d5cf12e3b3ea5169bdd41fdf947e5b5131dec5fd9f74374e916d05096c5d17): failed to bind host port 0.0.0.0:5432/tcp: address already in use
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker ps
+CONTAINER ID   IMAGE                            COMMAND                  CREATED         STATUS                    PORTS                                                                                                NAMES
+3fd7d10591de   postgres:16                      "docker-entrypoint.s…"   2 minutes ago   Up About a minute                                                                                                              postgres
+7963f2c5a952   ghcr.io/kafbat/kafka-ui:v1.1.0   "/bin/sh -c 'java --…"   2 weeks ago     Up 20 minutes             0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp                                                          kafka-ui
+bf5b8369fd4e   apache/kafka:3.9.0               "/__cacert_entrypoin…"   3 weeks ago     Up 20 minutes (healthy)   0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9101->9101/tcp, [::]:9101->9101/tcp             broker1
+2d3a4d703a57   apache/kafka:3.9.0               "/__cacert_entrypoin…"   3 weeks ago     Up 20 minutes (healthy)   0.0.0.0:9096->9096/tcp, [::]:9096->9096/tcp, 9092/tcp, 0.0.0.0:9103->9103/tcp, [::]:9103->9103/tcp   broker3
+356ace349edb   apache/kafka:3.9.0               "/__cacert_entrypoin…"   3 weeks ago     Up 20 minutes (healthy)   0.0.0.0:9094->9094/tcp, [::]:9094->9094/tcp, 9092/tcp, 0.0.0.0:9102->9102/tcp, [::]:9102->9102/tcp   broker2
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker start broker1 broker2 broker3 kafka-ui
+broker1
+broker2
+broker3
+kafka-ui
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ 
+
+
+
+estudiante@ip-192-168-166-41:/home$ ls -l
+total 20
+drwxrws---+ 5 est1       laboratorio 4096 Oct  8 14:28 est1
+drwxrws---+ 5 est2       laboratorio 4096 Oct  8 14:28 est2
+drwxr-x---  8 estudiante estudiante  4096 Oct  6 16:30 estudiante
+drwx------  3 minio-user minio-user  4096 Sep 18 15:13 minio-user
+drwxr-x---  9 ubuntu     ubuntu      4096 Oct  6 19:48 ubuntu
+estudiante@ip-192-168-166-41:/home$ cd est1
+estudiante@ip-192-168-166-41:/home/est1$ ls -l
+total 4
+drwxrws---+ 3 estudiante laboratorio 4096 Oct  8 14:29 equipo09
+estudiante@ip-192-168-166-41:/home/est1$ cd equipo09
+estudiante@ip-192-168-166-41:/home/est1/equipo09$ ls -l
+total 4
+drwxrws---+ 3 estudiante laboratorio 4096 Oct  8 14:29 kafka-dian
+estudiante@ip-192-168-166-41:/home/est1/equipo09$ cd kafka-dian
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian$ cd entorno
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml ps
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml up -d
+docker compose -f docker-compose-lab-kafka.yml ps
+[+] up 5/5
+ ✔ Container broker3          Healthy                                      45.9s
+ ✔ Container broker1          Healthy                                      46.4s
+ ✔ Container broker2          Healthy                                      46.9s
+ ✔ Container kafka-ui         Started                                       0.4s
+ ✔ Container bootstrap-topics Started                                       0.3s
+NAME               IMAGE                            COMMAND                  SERVICE            CREATED       STATUS                    PORTS
+bootstrap-topics   apache/kafka:3.9.0               "/bin/bash -c 'B=bro…"   bootstrap-topics   3 weeks ago   Up Less than a second     9092/tcp
+broker1            apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker1            3 weeks ago   Up 46 seconds (healthy)   0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9101->9101/tcp, [::]:9101->9101/tcp
+broker2            apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker2            3 weeks ago   Up 46 seconds (healthy)   0.0.0.0:9094->9094/tcp, [::]:9094->9094/tcp, 9092/tcp, 0.0.0.0:9102->9102/tcp, [::]:9102->9102/tcp
+broker3            apache/kafka:3.9.0               "/__cacert_entrypoin…"   broker3            3 weeks ago   Up 47 seconds (healthy)   0.0.0.0:9096->9096/tcp, [::]:9096->9096/tcp, 9092/tcp, 0.0.0.0:9103->9103/tcp, [::]:9103->9103/tcp
+kafka-ui           ghcr.io/kafbat/kafka-ui:v1.1.0   "/bin/sh -c 'java --…"   kafka-ui           2 weeks ago   Up 45 seconds             0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ EQUIPO=equipo09
+TOPIC=$EQUIPO.lab05.facturacion.emitida
+GROUP=${EQUIPO}-lab06-sink
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml -f docker-compose.override.yml up -d
+compose file "/home/est1/equipo09/kafka-dian/entorno/docker-compose.override.yml" is invalid: open /home/est1/equipo09/kafka-dian/entorno/docker-compose.override.yml: no such file or directory
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml -f docker-compose.override.yml up -d
+compose file "/home/est1/equipo09/kafka-dian/entorno/docker-compose.override.yml" is invalid: open /home/est1/equipo09/kafka-dian/entorno/docker-compose.override.yml: no such file or directory
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml -f docker-compose.override.yml up -d
+[+] up 6/6
+ ✔ Container kafka-ui         Running                                                                                                   0.0s
+ ✔ Container broker1          Healthy                                                                                                   0.6s
+ ✔ Container broker2          Healthy                                                                                                   0.6s
+ ✔ Container broker3          Healthy                                                                                                   0.6s
+ ✔ Container postgres         Started                                                                                                   0.2s
+ ✔ Container bootstrap-topics Started                                                                                                   0.4s
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ python3 consumidor_facturacion.py --topic "$TOPIC" --group "$GROUP"
+Traceback (most recent call last):
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_facturacion.py", line 6, in <module>
+    import psycopg2
+ModuleNotFoundError: No module named 'psycopg2'
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker compose -f docker-compose-lab-kafka.yml -f docker-compose.override.yml up -d
+[+] up 5/6
+ ✔ Container broker3          Healthy                                                                                                   1.1s
+ ✔ Container kafka-ui         Running                                                                                                   0.0s
+ ✔ Container broker1          Healthy                                                                                                   1.1s
+ ✔ Container broker2          Healthy                                                                                                   1.1s
+ ⠸ Container postgres         Starting                                                                                                  1.3s
+ ✔ Container bootstrap-topics Started                                                                                                   0.2s
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint postgres (11d5cf12e3b3ea5169bdd41fdf947e5b5131dec5fd9f74374e916d05096c5d17): failed to bind host port 0.0.0.0:5432/tcp: address already in use
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker ps
+CONTAINER ID   IMAGE                            COMMAND                  CREATED         STATUS                    PORTS                                                                                                NAMES
+3fd7d10591de   postgres:16                      "docker-entrypoint.s…"   2 minutes ago   Up About a minute                                                                                                              postgres
+7963f2c5a952   ghcr.io/kafbat/kafka-ui:v1.1.0   "/bin/sh -c 'java --…"   2 weeks ago     Up 20 minutes             0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp                                                          kafka-ui
+bf5b8369fd4e   apache/kafka:3.9.0               "/__cacert_entrypoin…"   3 weeks ago     Up 20 minutes (healthy)   0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9101->9101/tcp, [::]:9101->9101/tcp             broker1
+2d3a4d703a57   apache/kafka:3.9.0               "/__cacert_entrypoin…"   3 weeks ago     Up 20 minutes (healthy)   0.0.0.0:9096->9096/tcp, [::]:9096->9096/tcp, 9092/tcp, 0.0.0.0:9103->9103/tcp, [::]:9103->9103/tcp   broker3
+356ace349edb   apache/kafka:3.9.0               "/__cacert_entrypoin…"   3 weeks ago     Up 20 minutes (healthy)   0.0.0.0:9094->9094/tcp, [::]:9094->9094/tcp, 9092/tcp, 0.0.0.0:9102->9102/tcp, [::]:9102->9102/tcp   broker2
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker start broker1 broker2 broker3 kafka-ui
+broker1
+broker2
+broker3
+kafka-ui
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ source .venv/bin/active
+bash: .venv/bin/active: No such file or directory
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ source .venv/bin/active
+bash: .venv/bin/active: No such file or directory
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ source .venv/bin/active
+bash: .venv/bin/active: No such file or directory
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ pip install confluent-kafka
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try apt install
+    python3-xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a non-Debian-packaged Python package,
+    create a virtual environment using python3 -m venv path/to/venv.
+    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+    sure you have python3-full installed.
+    
+    If you wish to install a non-Debian packaged Python application,
+    it may be easiest to use pipx install xyz, which will manage a
+    virtual environment for you. Make sure you have pipx installed.
+    
+    See /usr/share/doc/python3.12/README.venv for more information.
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ pip install psycopg2-binary
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try apt install
+    python3-xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a non-Debian-packaged Python package,
+    create a virtual environment using python3 -m venv path/to/venv.
+    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+    sure you have python3-full installed.
+    
+    If you wish to install a non-Debian packaged Python application,
+    it may be easiest to use pipx install xyz, which will manage a
+    virtual environment for you. Make sure you have pipx installed.
+    
+    See /usr/share/doc/python3.12/README.venv for more information.
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ source .venv/bin/active
+bash: .venv/bin/active: No such file or directory
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ source .venv/bin/active
+bash: .venv/bin/active: No such file or directory
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ cd..
+cd..: command not found
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ source .venv/bin/active
+bash: .venv/bin/active: No such file or directory
+estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ source .venv/bin/activate
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ 
