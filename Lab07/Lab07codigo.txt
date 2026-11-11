@@ -1,0 +1,935 @@
+.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ kg() {
+  docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh \
+    --bootstrap-server broker1:19092 "$@"
+}
+bash: syntax error near unexpected token `('
+Command must include exactly one action: --list, --describe, --delete, --reset-offsets, --delete-offsets
+Option                                  Description                            
+------                                  -----------                            
+--all-groups                            Apply to all consumer groups.          
+--all-topics                            Consider all topics assigned to a      
+                                          group in the `reset-offsets` process.
+--bootstrap-server <String: server to   REQUIRED: The server(s) to connect to. 
+  connect to>                                                                  
+--by-duration <String: duration>        Reset offsets to offset by duration    
+                                          from current timestamp. Format:      
+                                          'PnDTnHnMnS'                         
+--command-config <String: command       Property file containing configs to be 
+  config property file>                   passed to Admin Client and Consumer. 
+--delete                                Pass in groups to delete topic         
+                                          partition offsets and ownership      
+                                          information over the entire consumer 
+                                          group. For instance --group g1 --    
+                                          group g2                             
+--delete-offsets                        Delete offsets of consumer group.      
+                                          Supports one consumer group at the   
+                                          time, and multiple topics.           
+--describe                              Describe consumer group and list       
+                                          offset lag (number of messages not   
+                                          yet processed) related to given      
+                                          group.                               
+--dry-run                               Only show results without executing    
+                                          changes on Consumer Groups.          
+                                          Supported operations: reset-offsets. 
+--execute                               Execute operation. Supported           
+                                          operations: reset-offsets.           
+--export                                Export operation execution to a CSV    
+                                          file. Supported operations: reset-   
+                                          offsets.                             
+--from-file <String: path to CSV file>  Reset offsets to values defined in CSV 
+                                          file.                                
+--group <String: consumer group>        The consumer group we wish to act on.  
+--help                                  Print usage information.               
+--list                                  List all consumer groups.              
+--members                               Describe members of the group. This    
+                                          option may be used with '--describe' 
+                                          and '--bootstrap-server' options     
+                                          only.                                
+                                        Example: --bootstrap-server localhost: 
+                                          9092 --describe --group group1 --    
+                                          members                              
+--offsets                               Describe the group and list all topic  
+                                          partitions in the group along with   
+                                          their offset lag. This is the        
+                                          default sub-action of and may be     
+                                          used with '--describe' and '--       
+                                          bootstrap-server' options only.      
+                                        Example: --bootstrap-server localhost: 
+                                          9092 --describe --group group1 --    
+                                          offsets                              
+--reset-offsets                         Reset offsets of consumer group.       
+                                          Supports one consumer group at the   
+                                          time, and instances should be        
+                                          inactive                             
+                                        Has 2 execution options: --dry-run     
+                                          (the default) to plan which offsets  
+                                          to reset, and --execute to update    
+                                          the offsets. Additionally, the --    
+                                          export option is used to export the  
+                                          results to a CSV format.             
+                                        You must choose one of the following   
+                                          reset specifications: --to-datetime, 
+                                          --by-duration, --to-earliest, --to-  
+                                          latest, --shift-by, --from-file, --  
+                                          to-current, --to-offset.             
+                                        To define the scope use --all-topics   
+                                          or --topic. One scope must be        
+                                          specified unless you use '--from-    
+                                          file'.                               
+--shift-by <Long: number-of-offsets>    Reset offsets shifting current offset  
+                                          by 'n', where 'n' can be positive or 
+                                          negative.                            
+--state [String]                        When specified with '--describe',      
+                                          includes the state of the group.     
+                                        Example: --bootstrap-server localhost: 
+                                          9092 --describe --group group1 --    
+                                          state                                
+                                        When specified with '--list', it       
+                                          displays the state of all groups. It 
+                                          can also be used to list groups with 
+                                          specific states.                     
+                                        Example: --bootstrap-server localhost: 
+                                          9092 --list --state stable,empty     
+                                        This option may be used with '--       
+                                          describe', '--list' and '--bootstrap-
+                                          server' options only.                
+--timeout <Long: timeout (ms)>          The timeout that can be set for some   
+                                          use cases. For example, it can be    
+                                          used when describing the group to    
+                                          specify the maximum amount of time   
+                                          in milliseconds to wait before the   
+                                          group stabilizes (when the group is  
+                                          just created, or is going through    
+                                          some changes). (default: 5000)       
+--to-current                            Reset offsets to current offset.       
+--to-datetime <String: datetime>        Reset offsets to offset from datetime. 
+                                          Format: 'YYYY-MM-DDTHH:mm:SS.sss'    
+--to-earliest                           Reset offsets to earliest offset.      
+--to-latest                             Reset offsets to latest offset.        
+--to-offset <Long: offset>              Reset offsets to a specific offset.    
+--topic <String: topic>                 The topic whose consumer group         
+                                          information should be deleted or     
+                                          topic whose should be included in    
+                                          the reset offset process. In `reset- 
+                                          offsets` case, partitions can be     
+                                          specified using this format: `topic1:
+                                          0,1,2`, where 0,1,2 are the          
+                                          partition to be included in the      
+                                          process. Reset-offsets also supports 
+                                          multiple topic inputs.               
+--type [String]                         When specified with '--list', it       
+                                          displays the types of all the        
+                                          groups. It can also be used to list  
+                                          groups with specific types.          
+                                        Example: --bootstrap-server localhost: 
+                                          9092 --list --type classic,consumer  
+                                        This option may be used with the '--   
+                                          list' option only.                   
+--verbose                               Provide additional information, if     
+                                          any, when describing the group. This 
+                                          option may be used with '--          
+                                          offsets'/'--members'/'--state' and   
+                                          '--bootstrap-server' options only.   
+                                        Example: --bootstrap-server localhost: 
+                                          9092 --describe --group group1 --    
+                                          members --verbose                    
+--version                               Display Kafka version.                 
+bash: syntax error near unexpected token `}'
+
+.venv/bin/python -u consumidor_facturacion.py \
+  --topic "equipo09.lab05.facturacion.emitida" \
+  --group "equipo09-lab07" \
+  --upsert \
+  --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" \
+  > consumidor4.log 2>&1 < /dev/null &
+[3] 387885
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh \
+  --bootstrap-server broker1:19092 \
+  --describe --group equipo09-lab07 \
+  --members --verbose
+[1]   Exit 1                  nohup env SLEEP_MS=5 PGPASSWORD="$PGPASSWORD" ./.venv/bin/python -u consumidor_facturacion.py --topic "equipo09.lab05.facturacion.emitida" --group "equipo09-lab07" --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "consumidor${i}.log" 2>&1 < /dev/null
+
+GROUP           CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07  rdkafka-38cb2317-afe0-42b3-b226-0532b65f72ae /172.18.0.1     rdkafka         3               (0,2,4)
+equipo09-lab07  rdkafka-c69a58a1-be15-4f70-bf6c-4c1ad376a281 /172.18.0.1     rdkafka         3               (1,3,5)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for i in $(seq 1 6); do
+  echo "MEDICIÓN $i - 3 CONSUMIDORES"
+  date +%T
+
+  docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh \
+    --bootstrap-server broker1:19092 \
+    --describe --group equipo09-lab07 |
+    awk '
+      $1=="GROUP" {
+        for(j=1;j<=NF;j++)
+          if($j=="LAG") col=j
+        next
+      }
+      col && $col ~ /^[0-9]+$/ {
+        lag+=$col
+done | tee lag_3_consumidores.txt0; fi
+MEDICIÓN 1 - 3 CONSUMIDORES
+15:17:53
+LAG TOTAL: 1216604
+MEDICIÓN 2 - 3 CONSUMIDORES
+15:18:27
+LAG TOTAL: 1210227
+MEDICIÓN 3 - 3 CONSUMIDORES
+15:19:00
+LAG TOTAL: 1203990
+MEDICIÓN 4 - 3 CONSUMIDORES
+15:19:33
+LAG TOTAL: 1197768
+MEDICIÓN 5 - 3 CONSUMIDORES
+15:20:06
+LAG TOTAL: 1191339
+MEDICIÓN 6 - 3 CONSUMIDORES
+15:20:40
+LAG TOTAL: 1184955
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh \
+  --bootstrap-server broker1:19092 \
+  --describe --group equipo09-lab07 --members --verbose
+
+GROUP           CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07  rdkafka-38cb2317-afe0-42b3-b226-0532b65f72ae /172.18.0.1     rdkafka         3               (0,2,4)
+equipo09-lab07  rdkafka-c69a58a1-be15-4f70-bf6c-4c1ad376a281 /172.18.0.1     rdkafka         3               (1,3,5)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for f in consumidor2.log consumidor3.log consumidor4.log lab07_escala6_*.log; do
+  if [ -f "$f" ]; then
+    echo "========== $f =========="
+    tail -n 15 "$f"
+  fi
+done
+========== consumidor2.log ==========
+Traceback (most recent call last):
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_facturacion.py", line 72, in <module>
+    main()
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_facturacion.py", line 64, in main
+    c.commit(message=msg, asynchronous=False)   # commit manual después de procesar
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cimpl.KafkaException: KafkaError{code=ILLEGAL_GENERATION,val=22,str="Commit failed: Broker: Specified group generation id is not valid"}
+========== consumidor3.log ==========
+========== consumidor4.log ==========
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ pgrep -af 'consumidor_facturacion.py'
+384036 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+387885 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ cp consumidor_facturacion.py consumidor_facturacion.py.bak_lab07
+
+python3 - <<'PY'
+from pathlib import Path
+
+p = Path("consumidor_facturacion.py")
+s = p.read_text()
+
+original = "from confluent_kafka import Consumer, Producer, KafkaException"
+s = s.replace(
+    original,
+    original + ", KafkaError",
+    1
+python3 -m py_compile consumidor_facturacion.pysperada. Archivo sin modificar.") in (espués de procesar'
+Correccion aplicada.
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ read -rsp "Contraseña PostgreSQL: " PGPASSWORD 
+echo
+export PGPASSWORD
+Contraseña PostgreSQL: 
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ nohup env SLEEP_MS=5 PGPASSWORD="$PGPASSWORD" \
+  ./.venv/bin/python -u consumidor_facturacion.py \
+  --topic "equipo09.lab05.facturacion.emitida" \
+  --group "equipo09-lab07" \
+  --upsert \
+  --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" \
+  > consumidor_corregido.log 2>&1 < /dev/null &
+[4] 430855
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh \
+  --bootstrap-server broker1:19092 \
+  --describe --group equipo09-lab07 \
+  --members --verbose
+[2]   Exit 1                  nohup env SLEEP_MS=5 PGPASSWORD="$PGPASSWORD" ./.venv/bin/python -u consumidor_facturacion.py --topic "equipo09.lab05.facturacion.emitida" --group "equipo09-lab07" --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "consumidor${i}.log" 2>&1 < /dev/null
+[3]-  Exit 1                  nohup env SLEEP_MS=5 PGPASSWORD="$PGPASSWORD" ./.venv/bin/python -u consumidor_facturacion.py --topic "equipo09.lab05.facturacion.emitida" --group "equipo09-lab07" --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > consumidor4.log 2>&1 < /dev/null
+
+GROUP           CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07  rdkafka-1cc90260-d2d5-44bf-b57e-bb54b51e8a11 /172.18.0.1     rdkafka         6               (0,1,2,3,4,5)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for f in consumidor2.log consumidor3.log consumidor4.log consumidor_corregido.log; do
+  if [ -f "$f" ]; then
+    echo "========== $f =========="
+    tail -n 20 "$f"
+  fi
+done
+========== consumidor2.log ==========
+Traceback (most recent call last):
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_facturacion.py", line 72, in <module>
+    main()
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_facturacion.py", line 64, in main
+    c.commit(message=msg, asynchronous=False)   # commit manual después de procesar
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cimpl.KafkaException: KafkaError{code=ILLEGAL_GENERATION,val=22,str="Commit failed: Broker: Specified group generation id is not valid"}
+========== consumidor3.log ==========
+Traceback (most recent call last):
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_facturacion.py", line 72, in <module>
+    ):
+
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_facturacion.py", line 64, in main
+    try:
+    ^^^^^
+cimpl.KafkaException: KafkaError{code=ILLEGAL_GENERATION,val=22,str="Commit failed: Broker: Specified group generation id is not valid"}
+========== consumidor4.log ==========
+Traceback (most recent call last):
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_facturacion.py", line 72, in <module>
+    ):
+
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_facturacion.py", line 64, in main
+    try:
+    ^^^^^
+cimpl.KafkaException: KafkaError{code=ILLEGAL_GENERATION,val=22,str="Commit failed: Broker: Specified group generation id is not valid"}
+========== consumidor_corregido.log ==========
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ nl -ba consumidor_facturacion.py | sed -n '58,90p'
+    58                      "consumidor": "lab06-v1", "ts": str(int(time.time()))})
+    59                  dlq.flush()
+    60                  print(f"-> enviado a DLQ p={msg.partition()} o={msg.offset()}")
+    61              procesados += 1
+    62              if a.kill_after and procesados >= a.kill_after:
+    63                  print(f"Simulando caída tras {procesados} mensajes, SIN commit"); sys.exit(1)
+    64              try:
+    65                  c.commit(message=msg, asynchronous=False)
+    66              except KafkaException as exc:
+    67                  error = exc.args[0] if exc.args else None
+    68                  if error is not None and hasattr(error, "code") and error.code() in (
+    69                      KafkaError.ILLEGAL_GENERATION,
+    70                      KafkaError.REBALANCE_IN_PROGRESS,
+    71                      KafkaError.UNKNOWN_MEMBER_ID,
+    72                  ):
+    73                      print(
+    74                          f"[REBALANCE] Commit no confirmado "
+    75                          f"p={msg.partition()} o={msg.offset()}",
+    76                          flush=True
+    77                      )
+    78                      continue
+    79                  raise
+    80              time.sleep(int(os.getenv("SLEEP_MS", "0")) / 1000)
+    81      except KeyboardInterrupt:
+    82          pass
+    83      finally:
+    84          c.close(); pg.close()
+    85
+    86  if __name__ == "__main__":
+    87      main()
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ pgrep -af 'consumidor_facturacion.py'
+430855 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ ./.venv/bin/python -m py_compile consumidor_facturacion.py
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ if [ -z "${PGPASSWORD:-}" ]; then
+  read -rsp "Contraseña PostgreSQL: " PGPASSWORD
+  echo
+  export PGPASSWORD
+fi
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_facturacion.py \
+  --topic "equipo09.lab05.facturacion.emitida" \
+  --group "equipo09-lab07" \
+  --upsert \
+  --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" \
+  > lab07_nuevo2.log 2>&1 < /dev/null &
+[5] 448829
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 10
+pgrep -af 'consumidor_facturacion.py'
+430855 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+448829 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh \
+  --bootstrap-server broker1:19092 \
+  --describe --group equipo09-lab07 --members --verbose
+
+GROUP           CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07  rdkafka-76af38d1-cae5-446e-a6aa-4a7cd5c9faea /172.18.0.1     rdkafka         3               (0,1,2)
+equipo09-lab07  rdkafka-1cc90260-d2d5-44bf-b57e-bb54b51e8a11 /172.18.0.1     rdkafka         3               (3,4,5)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ 
+
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ [ -n "${PGPASSWORD:-}" ] && echo "Contraseña disponible" || echo "Falta contraseña"
+Contraseña disponible
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ nohup env SLEEP_MS=5 PGPASSWORD="$PGPASSWORD" \
+  ./.venv/bin/python -u consumidor_facturacion.py \
+  --topic "equipo09.lab05.facturacion.emitida" \
+  --group "equipo09-lab07" \
+  --upsert \
+  --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" \
+  > lab07_nuevo3.log 2>&1 < /dev/null &
+[6] 455641
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 10
+pgrep -af 'consumidor_facturacion.py'
+430855 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+448829 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+455641 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh \
+  --bootstrap-server broker1:19092 \
+  --describe --group equipo09-lab07 \
+  --members --verbose
+
+GROUP           CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07  rdkafka-76af38d1-cae5-446e-a6aa-4a7cd5c9faea /172.18.0.1     rdkafka         2               (1,2)
+equipo09-lab07  rdkafka-ace38bb1-c8f1-4445-abce-b85e4ca93cf9 /172.18.0.1     rdkafka         2               (0,3)
+equipo09-lab07  rdkafka-1cc90260-d2d5-44bf-b57e-bb54b51e8a11 /172.18.0.1     rdkafka         2               (4,5)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ 
+
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ pgrep -af '[g]en_eventos.py'
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for i in $(seq 1 6); do
+  echo "MEDICIÓN $i - 3 CONSUMIDORES"
+  date +%T
+
+  docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh \
+    --bootstrap-server broker1:19092 \
+    --describe --group equipo09-lab07 |
+    awk '
+      $1=="GROUP" {
+        for(j=1;j<=NF;j++)
+          if($j=="LAG") col=j
+        next
+      }
+      col && $col ~ /^[0-9]+$/ {
+        lag+=$col
+done | tee lag_3_consumidores_confirmado.txt
+MEDICIÓN 1 - 3 CONSUMIDORES
+15:33:38
+LAG TOTAL: 1048696
+MEDICIÓN 2 - 3 CONSUMIDORES
+15:34:13
+LAG TOTAL: 1039452
+MEDICIÓN 3 - 3 CONSUMIDORES
+15:34:46
+LAG TOTAL: 1030064
+MEDICIÓN 4 - 3 CONSUMIDORES
+15:35:20
+LAG TOTAL: 1020716
+MEDICIÓN 5 - 3 CONSUMIDORES
+15:35:53
+LAG TOTAL: 1011166
+MEDICIÓN 6 - 3 CONSUMIDORES
+15:36:28
+LAG TOTAL: 1001923
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ python3 automatizar_lab07.py --sin-productor --dos-expulsiones
+python3: can't open file '/home/est1/equipo09/kafka-dian/entorno/automatizar_lab07.py': [Errno 2] No such file or directory
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ pgrep -af 'consumidor_facturacion.py'
+430855 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+448829 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+455641 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+553705 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+553706 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+553708 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07 --members --verbose
+
+GROUP           CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07  rdkafka-76af38d1-cae5-446e-a6aa-4a7cd5c9faea /172.18.0.1     rdkafka         1               (2)
+equipo09-lab07  rdkafka-3e23ed26-947c-4c3c-bdaa-ce7d515efa24 /172.18.0.1     rdkafka         1               (1)
+equipo09-lab07  rdkafka-ace38bb1-c8f1-4445-abce-b85e4ca93cf9 /172.18.0.1     rdkafka         1               (3)
+equipo09-lab07  rdkafka-f665209d-8cc6-4a7c-abd5-9cd421faab61 /172.18.0.1     rdkafka         1               (0)
+equipo09-lab07  rdkafka-0da2d70e-ec4a-4c30-835b-f0374562fea7 /172.18.0.1     rdkafka         1               (4)
+equipo09-lab07  rdkafka-1cc90260-d2d5-44bf-b57e-bb54b51e8a11 /172.18.0.1     rdkafka         1               (5)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for i in {1..6}; do echo "MEDICIÓN $i"; date +%T; docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07 | awk '$1=="equipo09-lab07" && $6~/^[0-9]+$/ {s+=$6;n++} END {if(n) print "LAG TOTAL:",s; else print "Sin datos"}'; if [ "$i" -lt 6 ]; then sleep 30; fi; done | tee lag_6_consumidores.txt
+MEDICIÓN 1
+15:56:24
+LAG TOTAL: 629784
+MEDICIÓN 2
+15:56:59
+LAG TOTAL: 612360
+MEDICIÓN 3
+15:57:34
+LAG TOTAL: 595747
+MEDICIÓN 4
+15:58:08
+LAG TOTAL: 579537
+MEDICIÓN 5
+15:58:43
+LAG TOTAL: 562426
+MEDICIÓN 6
+15:59:18
+LAG TOTAL: 545322
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ ^[[200~[ -n "${PGPASSWORD:-}" ] && echo "Contraseña lista" || echo "Falta contraseña"~
+[: command not found
+Falta contraseña~
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ read -rsp "Contraseña PostgreSQL: " PGPASSWORD; echo; export PGPASSWORD
+Contraseña PostgreSQL: 
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > lab07_consumidor7.log 2>&1 < /dev/null &
+[7] 598236
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 10
+docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07 --members --verbose
+[7]+  Exit 1                  nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > lab07_consumidor7.log 2>&1 < /dev/null
+
+GROUP           CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07  rdkafka-76af38d1-cae5-446e-a6aa-4a7cd5c9faea /172.18.0.1     rdkafka         1               (2)
+equipo09-lab07  rdkafka-3e23ed26-947c-4c3c-bdaa-ce7d515efa24 /172.18.0.1     rdkafka         1               (1)
+equipo09-lab07  rdkafka-ace38bb1-c8f1-4445-abce-b85e4ca93cf9 /172.18.0.1     rdkafka         1               (3)
+equipo09-lab07  rdkafka-f665209d-8cc6-4a7c-abd5-9cd421faab61 /172.18.0.1     rdkafka         1               (0)
+equipo09-lab07  rdkafka-0da2d70e-ec4a-4c30-835b-f0374562fea7 /172.18.0.1     rdkafka         1               (4)
+equipo09-lab07  rdkafka-1cc90260-d2d5-44bf-b57e-bb54b51e8a11 /172.18.0.1     rdkafka         1               (5)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ ^V
+: command not found
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ tail -n 40 lab07_consumidor7.log
+Traceback (most recent call last):
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_facturacion.py", line 87, in <module>
+    main()
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_facturacion.py", line 31, in main
+    pg = psycopg2.connect(a.pg); pg.autocommit = False
+         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/est1/equipo09/kafka-dian/entorno/.venv/lib/python3.12/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: connection to server at "127.0.0.1", port 5433 failed: FATAL:  password authentication failed for user "dian"
+
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ export PGPASSWORD="$(docker inspect --format '{{range .Config.Env}}{{println .}}{{end}}' postgres | sed -n 's/^POSTGRES_PASSWORD=//p' | head -n 1)"
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ python3 -c "import psycopg2; c=psycopg2.connect('host=127.0.0.1 port=5433 dbname=dian user=dian'); print('POSTGRESQL CONECTADO'); c.close()"
+POSTGRESQL CONECTADO
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > lab07_consumidor7.log 2>&1 < /dev/null &
+[7] 617656
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 10; docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07 --members --verbose
+
+GROUP           CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07  rdkafka-76af38d1-cae5-446e-a6aa-4a7cd5c9faea /172.18.0.1     rdkafka         1               (2)
+equipo09-lab07  rdkafka-3e23ed26-947c-4c3c-bdaa-ce7d515efa24 /172.18.0.1     rdkafka         1               (1)
+equipo09-lab07  rdkafka-ace38bb1-c8f1-4445-abce-b85e4ca93cf9 /172.18.0.1     rdkafka         1               (3)
+equipo09-lab07  rdkafka-f665209d-8cc6-4a7c-abd5-9cd421faab61 /172.18.0.1     rdkafka         1               (0)
+equipo09-lab07  rdkafka-0da2d70e-ec4a-4c30-835b-f0374562fea7 /172.18.0.1     rdkafka         1               (4)
+equipo09-lab07  rdkafka-1cc90260-d2d5-44bf-b57e-bb54b51e8a11 /172.18.0.1     rdkafka         1               (5)
+equipo09-lab07  rdkafka-0fbc2f3a-02e9-41b8-a3d4-c7b968dafa3d /172.18.0.1     rdkafka         0               -
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07 --members --verbose | tee lab07_7_consumidores.txt
+
+GROUP           CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07  rdkafka-76af38d1-cae5-446e-a6aa-4a7cd5c9faea /172.18.0.1     rdkafka         1               (2)
+equipo09-lab07  rdkafka-3e23ed26-947c-4c3c-bdaa-ce7d515efa24 /172.18.0.1     rdkafka         1               (1)
+equipo09-lab07  rdkafka-ace38bb1-c8f1-4445-abce-b85e4ca93cf9 /172.18.0.1     rdkafka         1               (3)
+equipo09-lab07  rdkafka-f665209d-8cc6-4a7c-abd5-9cd421faab61 /172.18.0.1     rdkafka         1               (0)
+equipo09-lab07  rdkafka-0da2d70e-ec4a-4c30-835b-f0374562fea7 /172.18.0.1     rdkafka         1               (4)
+equipo09-lab07  rdkafka-1cc90260-d2d5-44bf-b57e-bb54b51e8a11 /172.18.0.1     rdkafka         1               (5)
+equipo09-lab07  rdkafka-0fbc2f3a-02e9-41b8-a3d4-c7b968dafa3d /172.18.0.1     rdkafka         0               -
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ pgrep -af 'consumidor_facturacion.py'
+430855 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+448829 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+455641 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+553705 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+553706 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+553708 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+617656 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ pgrep -f '[p]ython.*consumidor_facturacion.py.*--group equipo09-lab07' | xargs -r kill -TERM
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sed 's/"partition.assignment.strategy": "cooperative-sticky"/"partition.assignment.strategy": "range"/' consumidor_facturacion.py > consumidor_range.py
+[4]   Terminated              nohup env SLEEP_MS=5 PGPASSWORD="$PGPASSWORD" ./.venv/bin/python -u consumidor_facturacion.py --topic "equipo09.lab05.facturacion.emitida" --group "equipo09-lab07" --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > consumidor_corregido.log 2>&1 < /dev/null
+[5]   Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_facturacion.py --topic "equipo09.lab05.facturacion.emitida" --group "equipo09-lab07" --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > lab07_nuevo2.log 2>&1 < /dev/null
+[6]-  Terminated              nohup env SLEEP_MS=5 PGPASSWORD="$PGPASSWORD" ./.venv/bin/python -u consumidor_facturacion.py --topic "equipo09.lab05.facturacion.emitida" --group "equipo09-lab07" --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > lab07_nuevo3.log 2>&1 < /dev/null
+[7]+  Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_facturacion.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > lab07_consumidor7.log 2>&1 < /dev/null
+
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ ^[[200~for i in 1 2 3; do nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_range.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "range_${i}.log" 2>&1 < /dev/null & done~
+bash: syntax error near unexpected token `do'
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ pgrep -af 'consumidor_range.py'
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07 --members --verbose
+
+Consumer group 'equipo09-lab07' has no active members.
+
+GROUP           CONSUMER-ID     HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ tail -n 25 range_1.log range_2.log range_3.log
+tail: cannot open 'range_1.log' for reading: No such file or directory
+tail: cannot open 'range_2.log' for reading: No such file or directory
+tail: cannot open 'range_3.log' for reading: No such file or directory
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ ls -l consumidor_range.py
+-rw-rw----+ 1 estudiante laboratorio 4585 Nov 10 16:11 consumidor_range.py
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ [ -n "${PGPASSWORD:-}" ] && echo "Contraseña cargada" || echo "Falta contraseña"
+Contraseña cargada
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for i in 1 2 3; do SLEEP_MS=5 nohup ./.venv/bin/python -u consumidor_range.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "range_$i.log" 2>&1 < /dev/null & done
+[1] 655711
+[2] 655713
+[3] 655714
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 10; pgrep -af 'consumidor_range.py'
+docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07 --members --verbose
+655711 ./.venv/bin/python -u consumidor_range.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+655713 ./.venv/bin/python -u consumidor_range.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+655714 ./.venv/bin/python -u consumidor_range.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07 --members --verbose
+
+GROUP           CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07  rdkafka-e1ccd040-fa0c-40a6-933c-b5d32464701d /172.18.0.1     rdkafka         2               (2,3)
+equipo09-lab07  rdkafka-b1225427-6a5f-41c2-866e-7c90e2cdbddb /172.18.0.1     rdkafka         2               (0,1)
+equipo09-lab07  rdkafka-eee90f11-b5ca-4b14-8892-ecb8aab918b8 /172.18.0.1     rdkafka         2               (4,5)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ tail -n 20 range_*.log
+==> range_1.log <==
+
+==> range_2.log <==
+
+==> range_3.log <==
+
+69405 ./.venv/bin/python -u consumidor_range.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+669406 ./.venv/bin/python -u consumidor_range.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg host=127.0.0.1 port=5433 dbname=dian user=dian
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ grep -n 'LAB07_TS' consumidor_range.py
+62:            print(f"LAB07_TS={time.time():.3f}", flush=True)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ tail -n 10 range_1.log
+LAB07_TS=1794327725.882
+LAB07_TS=1794327725.892
+LAB07_TS=1794327725.905
+LAB07_TS=1794327725.917
+LAB07_TS=1794327725.930
+LAB07_TS=1794327725.940
+LAB07_TS=1794327725.950
+LAB07_TS=1794327725.961
+LAB07_TS=1794327725.974
+LAB07_TS=1794327725.985
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ date +%s | tee range_inicio.txt
+1794327824
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for i in 4 5 6; do nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_range.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "range_$i.log" 2>&1 < /dev/null & done
+[4] 687688
+[5] 687689
+[6] 687690
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 10; docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07 --members --verbose | tee range_6_miembros.txt
+
+.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 10; docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07 --members --verbose | tee range_6_miembros.txt
+awk -F= -v t="$(cat range_inicio.txt)" '$1=="LAB07_TS"{if($2<=t) antes=$2;else if(!despues) despues=$2} END{if(antes&&despues) printf "Pausa observada Range: %.3f segundos\n",despues-antes;else print "No se pudo medir"}' range_1.log
+
+GROUP           CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07  rdkafka-afb1b252-e057-4f7f-ba1c-f6dd391c2873 /172.18.0.1     rdkafka         1               (3)
+equipo09-lab07  rdkafka-a2014ca2-9e4c-4ec9-a78f-732995339e9f /172.18.0.1     rdkafka         1               (2)
+equipo09-lab07  rdkafka-b2738501-0d3c-4e66-aa2b-e561caf47666 /172.18.0.1     rdkafka         1               (4)
+equipo09-lab07  rdkafka-5ed83778-4835-4c9e-8c55-211e4f780b7c /172.18.0.1     rdkafka         1               (1)
+equipo09-lab07  rdkafka-54f270ff-1321-4cba-87fa-2013fb8cba71 /172.18.0.1     rdkafka         1               (0)
+equipo09-lab07  rdkafka-c181c24b-1050-4396-a808-e8bd3a4cf267 /172.18.0.1     rdkafka         1               (5)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ awk -F= -v t="$(cat range_inicio.txt)" '$1=="LAB07_TS"{if($2<=t) antes=$2;else if(!despues) despues=$2} END{if(antes&&despues) printf "Pausa observada Range: %.3f segundos\n",despues-antes;else print "No se pudo medir"}' range_1.log
+Pausa observada Range: 0.011 segundos
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ pgrep -f '[p]ython.*consumidor_range.py.*--group equipo09-lab07' | xargs -r kill -TERM
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ cp consumidor_facturacion.py consumidor_coop.py
+[1]   Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_range.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "range_$i.log" 2>&1 < /dev/null
+[2]   Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_range.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "range_$i.log" 2>&1 < /dev/null
+[3]   Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_range.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "range_$i.log" 2>&1 < /dev/null
+[4]   Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_range.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "range_$i.log" 2>&1 < /dev/null
+[5]-  Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_range.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "range_$i.log" 2>&1 < /dev/null
+[6]+  Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_range.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "range_$i.log" 2>&1 < /dev/null
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ grep -q 'LAB07_TS=' consumidor_coop.py || sed -i '/procesados += 1/a\            print(f"LAB07_TS={time.time():.3f}", flush=True)' consumidor_coop.py
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for i in 1 2 3; do nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null & done
+[1] 691005
+[2] 691006
+[3] 691007
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 10; pgrep -af 'consumidor_coop.py'
+[1]   Exit 1                  nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null
+[2]-  Exit 1                  nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null
+[3]+  Exit 1                  nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null
+date +%s | tee coop_inicio.txt
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ date +%s | tee coop_inicio.txt
+1794327886
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for i in 4 5 6; do nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null & done
+[1] 692421
+[2] 692422
+[3] 692423
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 10; docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07 --members --verbose | tee coop_6_miembros.txt
+[1]   Exit 1                  nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null
+[2]-  Exit 1                  nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null
+[3]+  Exit 1                  nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07 --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null
+
+Consumer group 'equipo09-lab07' has no active members.
+
+GROUP           CONSUMER-ID     HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ awk -F= -v t="$(cat coop_inicio.txt)" '$1=="LAB07_TS"{if($2<=t) antes=$2;else if(!despues) despues=$2} END{if(antes&&despues) printf "Pausa observada Cooperativo: %.3f segundos\n",despues-antes;else print "No se pudo medir"}' coop_1.log
+No se pudo medir
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ tail -n 15 coop_1.log coop_4.log
+==> coop_1.log <==
+Traceback (most recent call last):
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_coop.py", line 88, in <module>
+    main()
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_coop.py", line 39, in main
+    if msg.error(): raise KafkaException(msg.error())
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cimpl.KafkaException: KafkaError{code=INCONSISTENT_GROUP_PROTOCOL,val=23,str="JoinGroup failed: Broker: Inconsistent group protocol"}
+
+==> coop_4.log <==
+Traceback (most recent call last):
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_coop.py", line 88, in <module>
+    main()
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_coop.py", line 39, in main
+    if msg.error(): raise KafkaException(msg.error())
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cimpl.KafkaException: KafkaError{code=INCONSISTENT_GROUP_PROTOCOL,val=23,str="JoinGroup failed: Broker: Inconsistent group protocol"}
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ python3 -c "import psycopg2; c=psycopg2.connect('host=127.0.0.1 port=5433 dbname=dian user=dian'); print('POSTGRESQL OK'); c.close()"
+POSTGRESQL OK
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ }for i in 1 2 3; do nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-coop --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null & done
+bash: syntax error near unexpected token `do'
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 8; docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07-coop --members --verbose | tee coop_3_miembros.txt
+date +%s | tee coop_inicio.txt
+
+Error: Consumer group 'equipo09-lab07-coop' does not exist.
+
+GROUP           CONSUMER-ID     HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ date +%s | tee coop_inicio.txt
+1794328012
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for i in 4 5 6; do nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-coop --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null & done
+[1] 702540
+[2] 702541
+[3] 702542
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 8; docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07-coop --members --verbose | tee coop_6_miembros.txt
+awk -F= -v t="$(cat coop_inicio.txt)" '$1=="LAB07_TS"{if($2<=t) antes=$2;else if(!despues) despues=$2} END{if(antes&&despues) printf "Pausa observada Cooperative-Sticky: %.3f segundos\n",despues-antes;else print "No se pudo medir"}' coop_1.log
+
+GROUP               CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07-coop rdkafka-615e6a5e-09f2-4168-9cfc-53f0ea1232c4 /172.18.0.1     rdkafka         2               (0,2)
+equipo09-lab07-coop rdkafka-6f2a1d0a-96a1-4f37-97f5-9f564d003bb3 /172.18.0.1     rdkafka         2               (4,5)
+equipo09-lab07-coop rdkafka-084526c4-2445-45c8-830e-f08325f7c03a /172.18.0.1     rdkafka         2               (1,3)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ awk -F= -v t="$(cat coop_inicio.txt)" '$1=="LAB07_TS"{if($2<=t) antes=$2;else if(!despues) despues=$2} END{if(antes&&despues) printf "Pausa observada Cooperative-Sticky: %.3f segundos\n",despues-antes;else print "No se pudo medir"}' coop_1.log
+No se pudo medir
+
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07-coop --members --verbose | tee coop_3_miembros.txt
+
+GROUP               CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07-coop rdkafka-615e6a5e-09f2-4168-9cfc-53f0ea1232c4 /172.18.0.1     rdkafka         2               (0,2)
+equipo09-lab07-coop rdkafka-6f2a1d0a-96a1-4f37-97f5-9f564d003bb3 /172.18.0.1     rdkafka         2               (4,5)
+equipo09-lab07-coop rdkafka-084526c4-2445-45c8-830e-f08325f7c03a /172.18.0.1     rdkafka         2               (1,3)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ date +%s | tee coop_inicio.txt
+1794328128
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for i in 1 2 3; do nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-coop --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null & done
+[4] 712714
+[5] 712715
+[6] 712716
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 8; docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07-coop --members --verbose | tee coop_6_miembros.txt
+awk -F= -v t="$(cat coop_inicio.txt)" '$1=="LAB07_TS"{if($2<=t) antes=$2;else if(!despues) despues=$2} END{if(antes&&despues) printf "Intervalo observado Cooperative-Sticky: %.3f segundos\n",despues-antes;else print "No se pudo medir"}' coop_4.log
+
+GROUP               CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07-coop rdkafka-615e6a5e-09f2-4168-9cfc-53f0ea1232c4 /172.18.0.1     rdkafka         1               (2)
+equipo09-lab07-coop rdkafka-6f2a1d0a-96a1-4f37-97f5-9f564d003bb3 /172.18.0.1     rdkafka         1               (5)
+equipo09-lab07-coop rdkafka-70a06cd9-1d4a-45b2-b2eb-a9ae83a2c517 /172.18.0.1     rdkafka         1               (4)
+equipo09-lab07-coop rdkafka-f25dcd2d-f465-4d30-b103-0428a28bf094 /172.18.0.1     rdkafka         1               (0)
+equipo09-lab07-coop rdkafka-bd97e6f5-2f9b-468e-afa8-7a0275c1a5cf /172.18.0.1     rdkafka         1               (1)
+equipo09-lab07-coop rdkafka-084526c4-2445-45c8-830e-f08325f7c03a /172.18.0.1     rdkafka         1               (3)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ awk -F= -v t="$(cat coop_inicio.txt)" '$1=="LAB07_TS"{if($2<=t) antes=$2;else if(!despues) despues=$2} END{if(antes&&despues) printf "Intervalo observado Cooperative-Sticky: %.3f segundos\n",despues-antes;else print "No se pudo medir"}' coop_4.log
+Intervalo observado Cooperative-Sticky: 0.011 segundos
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07-coop --members --verbose | tee coop_3_miembros.txt
+
+GROUP               CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07-coop rdkafka-615e6a5e-09f2-4168-9cfc-53f0ea1232c4 /172.18.0.1     rdkafka         1               (2)
+equipo09-lab07-coop rdkafka-6f2a1d0a-96a1-4f37-97f5-9f564d003bb3 /172.18.0.1     rdkafka         1               (5)
+equipo09-lab07-coop rdkafka-70a06cd9-1d4a-45b2-b2eb-a9ae83a2c517 /172.18.0.1     rdkafka         1               (4)
+equipo09-lab07-coop rdkafka-f25dcd2d-f465-4d30-b103-0428a28bf094 /172.18.0.1     rdkafka         1               (0)
+equipo09-lab07-coop rdkafka-bd97e6f5-2f9b-468e-afa8-7a0275c1a5cf /172.18.0.1     rdkafka         1               (1)
+equipo09-lab07-coop rdkafka-084526c4-2445-45c8-830e-f08325f7c03a /172.18.0.1     rdkafka         1               (3)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ date +%s | tee coop_inicio.txt
+1794328232
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for i in 1 2 3; do nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-coop --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null & done
+[7] 721111
+[8] 721112
+[9] 721113
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 8; docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07-coop --members --verbose | tee coop_6_miembros.txt
+awk -F= -v t="$(cat coop_inicio.txt)" '$1=="LAB07_TS"{if($2<=t) antes=$2;else if(!despues) despues=$2} END{if(antes&&despues) printf "Intervalo observado Cooperative-Sticky: %.3f segundos\n",despues-antes;else print "No se pudo medir"}' coop_4.log
+
+GROUP               CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07-coop rdkafka-d63bbb08-5e70-4f5c-9897-ed553ba3c37c /172.18.0.1     rdkafka         0               -
+equipo09-lab07-coop rdkafka-615e6a5e-09f2-4168-9cfc-53f0ea1232c4 /172.18.0.1     rdkafka         1               (2)
+equipo09-lab07-coop rdkafka-6f2a1d0a-96a1-4f37-97f5-9f564d003bb3 /172.18.0.1     rdkafka         1               (5)
+equipo09-lab07-coop rdkafka-a984b8f0-b12c-4c82-86b1-9cc9b398454c /172.18.0.1     rdkafka         0               -
+equipo09-lab07-coop rdkafka-3f395564-294a-40e4-a33a-fd0c76d2e395 /172.18.0.1     rdkafka         0               -
+equipo09-lab07-coop rdkafka-70a06cd9-1d4a-45b2-b2eb-a9ae83a2c517 /172.18.0.1     rdkafka         1               (4)
+equipo09-lab07-coop rdkafka-f25dcd2d-f465-4d30-b103-0428a28bf094 /172.18.0.1     rdkafka         1               (0)
+equipo09-lab07-coop rdkafka-bd97e6f5-2f9b-468e-afa8-7a0275c1a5cf /172.18.0.1     rdkafka         1               (1)
+equipo09-lab07-coop rdkafka-084526c4-2445-45c8-830e-f08325f7c03a /172.18.0.1     rdkafka         1               (3)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ awk -F= -v t="$(cat coop_inicio.txt)" '$1=="LAB07_TS"{if($2<=t) antes=$2;else if(!despues) despues=$2} END{if(antes&&despues) printf "Intervalo observado Cooperative-Sticky: %.3f segundos\n",despues-antes;else print "No se pudo medir"}' coop_4.log
+Intervalo observado Cooperative-Sticky: 0.012 segundos
+
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ for p in 721111 721112 721113; do ps -p "$p" -o args= | grep -q 'consumidor_coop.py.*--group equipo09-lab07-coop' && kill "$p"; done
+[7]   Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-coop --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null
+[8]-  Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-coop --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 5; docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07-coop --members --verbose | tee coop_6_final.txt
+[9]+  Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-coop --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null
+
+GROUP               CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07-coop rdkafka-d63bbb08-5e70-4f5c-9897-ed553ba3c37c /172.18.0.1     rdkafka         0               -
+equipo09-lab07-coop rdkafka-615e6a5e-09f2-4168-9cfc-53f0ea1232c4 /172.18.0.1     rdkafka         1               (2)
+equipo09-lab07-coop rdkafka-6f2a1d0a-96a1-4f37-97f5-9f564d003bb3 /172.18.0.1     rdkafka         1               (5)
+equipo09-lab07-coop rdkafka-a984b8f0-b12c-4c82-86b1-9cc9b398454c /172.18.0.1     rdkafka         0               -
+equipo09-lab07-coop rdkafka-3f395564-294a-40e4-a33a-fd0c76d2e395 /172.18.0.1     rdkafka         0               -
+equipo09-lab07-coop rdkafka-70a06cd9-1d4a-45b2-b2eb-a9ae83a2c517 /172.18.0.1     rdkafka         1               (4)
+equipo09-lab07-coop rdkafka-f25dcd2d-f465-4d30-b103-0428a28bf094 /172.18.0.1     rdkafka         1               (0)
+equipo09-lab07-coop rdkafka-bd97e6f5-2f9b-468e-afa8-7a0275c1a5cf /172.18.0.1     rdkafka         1               (1)
+equipo09-lab07-coop rdkafka-084526c4-2445-45c8-830e-f08325f7c03a /172.18.0.1     rdkafka         1               (3)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ pgrep -f '[p]ython.*consumidor_coop.py.*--group equipo09-lab07-coop' | xargs -r kill -TERM
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sed 's/"max.poll.interval.ms": 300000/"max.poll.interval.ms": 15000, "session.timeout.ms": 10000/' consumidor_coop.py > consumidor_poll_lento.py
+[1]   Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-coop --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null
+[2]   Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-coop --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null
+[3]   Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-coop --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null
+[4]   Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-coop --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null
+[5]-  Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-coop --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null
+[6]+  Terminated              nohup env SLEEP_MS=5 ./.venv/bin/python -u consumidor_coop.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-coop --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > "coop_$i.log" 2>&1 < /dev/null
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ grep -nE 'max.poll.interval.ms|session.timeout.ms' consumidor_poll_lento.py; ./.venv/bin/python -m py_compile consumidor_poll_lento.py
+28:                  "auto.offset.reset": "earliest", "max.poll.interval.ms": 15000, "session.timeout.ms": 10000,
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ nohup env SLEEP_MS=20000 ./.venv/bin/python -u consumidor_poll_lento.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-poll --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > poll_lento.log 2>&1 < /dev/null &
+[1] 739746
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ nohup env SLEEP_MS=2000 ./.venv/bin/python -u consumidor_poll_lento.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-poll --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > poll_normal.log 2>&1 < /dev/null &
+[2] 740219
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 5; docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07-poll --members --verbose | tee poll_antes.txt
+sleep 25; tail -n 30 poll_lento.log
+
+GROUP               CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07-poll rdkafka-feb97aa2-ff36-4167-bcba-49003b94d8fc /172.18.0.1     rdkafka         6               (0,1,2,3,4,5)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ sleep 25; tail -n 30 poll_lento.log
+docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07-poll --members --verbose | tee poll_despues.txt
+[1]-  Exit 1                  nohup env SLEEP_MS=20000 ./.venv/bin/python -u consumidor_poll_lento.py --topic equipo09.lab05.facturacion.emitida --group equipo09-lab07-poll --upsert --pg "host=127.0.0.1 port=5433 dbname=dian user=dian" > poll_lento.log 2>&1 < /dev/null
+LAB07_TS=1794328487.152
+%4|1794328502.522|MAXPOLL|rdkafka#consumer-1| [thrd:main]: Application maximum poll interval (15000ms) exceeded by 375ms (adjust max.poll.interval.ms for long-running message processing): leaving group
+Traceback (most recent call last):
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_poll_lento.py", line 88, in <module>
+    main()
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_poll_lento.py", line 39, in main
+    if msg.error(): raise KafkaException(msg.error())
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cimpl.KafkaException: KafkaError{code=_MAX_POLL_EXCEEDED,val=-147,str="Application maximum poll interval (15000ms) exceeded by 375ms"}
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$ docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group equipo09-lab07-poll --members --verbose | tee poll_despues.txt
+
+GROUP               CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07-poll rdkafka-feb97aa2-ff36-4167-bcba-49003b94d8fc /172.18.0.1     rdkafka         6               (0,1,2,3,4,5)
+(.venv) estudiante@ip-192-168-166-41:/home/est1/equipo09/kafka-dian/entorno$
+
+
+=================================================================
+
+ARCHIVOS DE SALIDA GUARDADOS EN EL SERVIDOR (CONTENIDO ORIGINAL DEL TAR.GZ)
+=================================================================
+
+========== lag_1_consumidor.txt ==========
+MEDICIÓN 1
+14:58:07
+LAG TOTAL: 1231881
+MEDICIÓN 2
+14:58:40
+LAG TOTAL: 1244416
+MEDICIÓN 3
+14:59:14
+LAG TOTAL: 1257471
+MEDICIÓN 4
+14:59:49
+LAG TOTAL: 1270049
+MEDICIÓN 5
+15:00:22
+LAG TOTAL: 1282436
+MEDICIÓN 6
+15:00:55
+LAG TOTAL: 1295233
+
+========== lag_3_consumidores.txt ==========
+MEDICIÓN 1 - 3 CONSUMIDORES
+15:17:53
+LAG TOTAL: 1216604
+MEDICIÓN 2 - 3 CONSUMIDORES
+15:18:27
+LAG TOTAL: 1210227
+MEDICIÓN 3 - 3 CONSUMIDORES
+15:19:00
+LAG TOTAL: 1203990
+MEDICIÓN 4 - 3 CONSUMIDORES
+15:19:33
+LAG TOTAL: 1197768
+MEDICIÓN 5 - 3 CONSUMIDORES
+15:20:06
+LAG TOTAL: 1191339
+MEDICIÓN 6 - 3 CONSUMIDORES
+15:20:40
+LAG TOTAL: 1184955
+
+========== lag_3_consumidores_confirmado.txt ==========
+MEDICIÓN 1 - 3 CONSUMIDORES
+15:33:38
+LAG TOTAL: 1048696
+MEDICIÓN 2 - 3 CONSUMIDORES
+15:34:13
+LAG TOTAL: 1039452
+MEDICIÓN 3 - 3 CONSUMIDORES
+15:34:46
+LAG TOTAL: 1030064
+MEDICIÓN 4 - 3 CONSUMIDORES
+15:35:20
+LAG TOTAL: 1020716
+MEDICIÓN 5 - 3 CONSUMIDORES
+15:35:53
+LAG TOTAL: 1011166
+MEDICIÓN 6 - 3 CONSUMIDORES
+15:36:28
+LAG TOTAL: 1001923
+
+========== lag_6_consumidores.txt ==========
+MEDICIÓN 1
+15:56:24
+LAG TOTAL: 629784
+MEDICIÓN 2
+15:56:59
+LAG TOTAL: 612360
+MEDICIÓN 3
+15:57:34
+LAG TOTAL: 595747
+MEDICIÓN 4
+15:58:08
+LAG TOTAL: 579537
+MEDICIÓN 5
+15:58:43
+LAG TOTAL: 562426
+MEDICIÓN 6
+15:59:18
+LAG TOTAL: 545322
+
+========== lab07_7_consumidores.txt ==========
+
+GROUP           CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07  rdkafka-76af38d1-cae5-446e-a6aa-4a7cd5c9faea /172.18.0.1     rdkafka         1               (2)
+equipo09-lab07  rdkafka-3e23ed26-947c-4c3c-bdaa-ce7d515efa24 /172.18.0.1     rdkafka         1               (1)
+equipo09-lab07  rdkafka-ace38bb1-c8f1-4445-abce-b85e4ca93cf9 /172.18.0.1     rdkafka         1               (3)
+equipo09-lab07  rdkafka-f665209d-8cc6-4a7c-abd5-9cd421faab61 /172.18.0.1     rdkafka         1               (0)
+equipo09-lab07  rdkafka-0da2d70e-ec4a-4c30-835b-f0374562fea7 /172.18.0.1     rdkafka         1               (4)
+equipo09-lab07  rdkafka-1cc90260-d2d5-44bf-b57e-bb54b51e8a11 /172.18.0.1     rdkafka         1               (5)
+equipo09-lab07  rdkafka-0fbc2f3a-02e9-41b8-a3d4-c7b968dafa3d /172.18.0.1     rdkafka         0               -
+
+========== range_3_miembros.txt ==========
+
+GROUP           CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07  rdkafka-e1ccd040-fa0c-40a6-933c-b5d32464701d /172.18.0.1     rdkafka         2               (2,3)
+equipo09-lab07  rdkafka-b1225427-6a5f-41c2-866e-7c90e2cdbddb /172.18.0.1     rdkafka         2               (0,1)
+equipo09-lab07  rdkafka-eee90f11-b5ca-4b14-8892-ecb8aab918b8 /172.18.0.1     rdkafka         2               (4,5)
+
+========== range_6_miembros.txt ==========
+
+GROUP           CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07  rdkafka-afb1b252-e057-4f7f-ba1c-f6dd391c2873 /172.18.0.1     rdkafka         1               (3)
+equipo09-lab07  rdkafka-a2014ca2-9e4c-4ec9-a78f-732995339e9f /172.18.0.1     rdkafka         1               (2)
+equipo09-lab07  rdkafka-b2738501-0d3c-4e66-aa2b-e561caf47666 /172.18.0.1     rdkafka         1               (4)
+equipo09-lab07  rdkafka-5ed83778-4835-4c9e-8c55-211e4f780b7c /172.18.0.1     rdkafka         1               (1)
+equipo09-lab07  rdkafka-54f270ff-1321-4cba-87fa-2013fb8cba71 /172.18.0.1     rdkafka         1               (0)
+equipo09-lab07  rdkafka-c181c24b-1050-4396-a808-e8bd3a4cf267 /172.18.0.1     rdkafka         1               (5)
+
+========== coop_6_miembros.txt ==========
+
+GROUP               CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07-coop rdkafka-d63bbb08-5e70-4f5c-9897-ed553ba3c37c /172.18.0.1     rdkafka         0               -
+equipo09-lab07-coop rdkafka-615e6a5e-09f2-4168-9cfc-53f0ea1232c4 /172.18.0.1     rdkafka         1               (2)
+equipo09-lab07-coop rdkafka-6f2a1d0a-96a1-4f37-97f5-9f564d003bb3 /172.18.0.1     rdkafka         1               (5)
+equipo09-lab07-coop rdkafka-a984b8f0-b12c-4c82-86b1-9cc9b398454c /172.18.0.1     rdkafka         0               -
+equipo09-lab07-coop rdkafka-3f395564-294a-40e4-a33a-fd0c76d2e395 /172.18.0.1     rdkafka         0               -
+equipo09-lab07-coop rdkafka-70a06cd9-1d4a-45b2-b2eb-a9ae83a2c517 /172.18.0.1     rdkafka         1               (4)
+equipo09-lab07-coop rdkafka-f25dcd2d-f465-4d30-b103-0428a28bf094 /172.18.0.1     rdkafka         1               (0)
+equipo09-lab07-coop rdkafka-bd97e6f5-2f9b-468e-afa8-7a0275c1a5cf /172.18.0.1     rdkafka         1               (1)
+equipo09-lab07-coop rdkafka-084526c4-2445-45c8-830e-f08325f7c03a /172.18.0.1     rdkafka         1               (3)
+
+========== poll_antes.txt ==========
+
+GROUP               CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07-poll rdkafka-feb97aa2-ff36-4167-bcba-49003b94d8fc /172.18.0.1     rdkafka         6               (0,1,2,3,4,5)
+
+========== poll_despues.txt ==========
+
+GROUP               CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07-poll rdkafka-feb97aa2-ff36-4167-bcba-49003b94d8fc /172.18.0.1     rdkafka         6               (0,1,2,3,4,5)
+
+========== poll_lento.log ==========
+LAB07_TS=1794328487.152
+%4|1794328502.522|MAXPOLL|rdkafka#consumer-1| [thrd:main]: Application maximum poll interval (15000ms) exceeded by 375ms (adjust max.poll.interval.ms for long-running message processing): leaving group
+Traceback (most recent call last):
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_poll_lento.py", line 88, in <module>
+    main()
+  File "/home/est1/equipo09/kafka-dian/entorno/consumidor_poll_lento.py", line 39, in main
+    if msg.error(): raise KafkaException(msg.error())
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cimpl.KafkaException: KafkaError{code=_MAX_POLL_EXCEEDED,val=-147,str="Application maximum poll interval (15000ms) exceeded by 375ms"}
+
+========== poll_corregido_log.txt ==========
+LAB07_TS=1794328603.410
+LAB07_TS=1794328605.416
+LAB07_TS=1794328607.421
+LAB07_TS=1794328609.428
+LAB07_TS=1794328611.434
+LAB07_TS=1794328613.440
+LAB07_TS=1794328615.445
+LAB07_TS=1794328617.452
+LAB07_TS=1794328619.458
+LAB07_TS=1794328621.463
+
+========== poll_corregido_miembros.txt ==========
+
+GROUP               CONSUMER-ID                                  HOST            CLIENT-ID       #PARTITIONS     ASSIGNMENT
+equipo09-lab07-poll rdkafka-feb97aa2-ff36-4167-bcba-49003b94d8fc /172.18.0.1     rdkafka         6               (0,1,2,3,4,5)
