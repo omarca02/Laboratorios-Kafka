@@ -1,0 +1,331 @@
+LABORATORIO 08 - CONTRATO AVRO Y SCHEMA REGISTRY
+EQUIPO 09
+========================================================================
+
+ARCHIVO: declaracion-presentada-v1.avsc
+------------------------------------------------------------------------
+{
+  "type": "record",
+  "name": "DeclaracionPresentada",
+  "namespace": "gov.dian.tributaria",
+  "doc": "Evento emitido cuando un contribuyente presenta una declaración. Datos sintéticos para formación.",
+  "fields": [
+    {"name": "id_evento", "type": "string", "doc": "Identificador único del evento (UUID). Clave de idempotencia en los consumidores."},
+    {"name": "nit", "type": "string", "doc": "NIT del declarante, sin dígito de verificación. Clave de partición: conserva el orden por contribuyente."},
+    {"name": "formulario", "type": "string", "doc": "Código del formulario presentado (110, 300, 350, 490)."},
+    {"name": "periodo", "type": "string", "doc": "Periodo gravable en formato AAAA-MM."},
+    {"name": "fecha_presentacion", "type": {"type": "long", "logicalType": "timestamp-millis"}, "doc": "Momento de la presentación, en UTC."},
+    {"name": "valor_pagado", "type": {"type": "bytes", "logicalType": "decimal", "precision": 16, "scale": 2}, "doc": "Valor pagado en pesos colombianos."},
+    {"name": "estado", "type": {"type": "enum", "name": "EstadoDeclaracion", "symbols": ["PRESENTADA", "ANULADA", "CORREGIDA"]}, "doc": "Estado de la declaración al momento del evento."}
+  ]
+}
+
+
+ARCHIVO: productor_avro.py
+------------------------------------------------------------------------
+#!/usr/bin/env python3
+"""Productor Avro para el evento dian.declaracion.presentada."""
+
+import argparse
+import random
+import uuid
+from datetime import datetime, timezone
+from decimal import Decimal
+from pathlib import Path
+
+from confluent_kafka import SerializingProducer
+from confluent_kafka.schema_registry import SchemaRegistryClient
+from confluent_kafka.schema_registry.avro import AvroSerializer
+from confluent_kafka.serialization import StringSerializer
+
+
+TOPIC = "dian.declaracion.presentada"
+BOOTSTRAP_SERVERS = "localhost:9092"
+SCHEMA_REGISTRY_URL = "http://localhost:8081"
+SCHEMA_PATH = Path(__file__).with_name("declaracion-presentada-v1.avsc")
+
+
+def crear_evento(invalido: bool = False) -> dict:
+    """Construye un evento sintético que cumple el contrato Avro."""
+    valor = Decimal(random.randint(100_000_00, 50_000_000_00)) / Decimal("100")
+    return {
+        "id_evento": str(uuid.uuid4()),
+        "nit": str(random.randint(800_000_000, 999_999_999)),
+        "formulario": random.choice(["110", "300", "350", "490"]),
+        "periodo": "2026-07",
+        "fecha_presentacion": int(datetime.now(timezone.utc).timestamp() * 1000),
+        "valor_pagado": valor.quantize(Decimal("0.01")),
+        "estado": "EN_TRAMITE" if invalido else random.choice(
+            ["PRESENTADA", "ANULADA", "CORREGIDA"]
+        ),
+    }
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Produce eventos tributarios en Avro")
+    parser.add_argument("--n", type=int, default=50, help="Cantidad de eventos")
+    parser.add_argument(
+        "--invalido",
+        action="store_true",
+        help="Intenta producir EN_TRAMITE para comprobar la validación del enum",
+    )
+    args = parser.parse_args()
+
+    schema_str = SCHEMA_PATH.read_text(encoding="utf-8")
+    registry = SchemaRegistryClient({"url": SCHEMA_REGISTRY_URL})
+    avro_serializer = AvroSerializer(
+        registry,
+        schema_str,
+        conf={"auto.register.schemas": False},
+    )
+
+    producer = SerializingProducer(
+        {
+            "bootstrap.servers": BOOTSTRAP_SERVERS,
+            "key.serializer": StringSerializer("utf_8"),
+            "value.serializer": avro_serializer,
+            "acks": "all",
+            "enable.idempotence": True,
+        }
+    )
+
+    enviados = 0
+    for _ in range(args.n):
+        evento = crear_evento(args.invalido)
+        try:
+            producer.produce(
+                topic=TOPIC,
+                key=evento["nit"],
+                value=evento,
+            )
+            enviados += 1
+            producer.poll(0)
+        except Exception as exc:
+            print(f"[RECHAZADO POR EL ESQUEMA] {type(exc).__name__}: {exc}")
+            break
+
+    producer.flush()
+    print(f"enviados: {enviados}")
+
+
+if __name__ == "__main__":
+    main()
+
+
+ARCHIVO: consumidor_avro.py
+------------------------------------------------------------------------
+#!/usr/bin/env python3
+"""Consumidor Avro para el evento dian.declaracion.presentada."""
+
+import argparse
+
+from confluent_kafka import DeserializingConsumer, KafkaError
+from confluent_kafka.schema_registry import SchemaRegistryClient
+from confluent_kafka.schema_registry.avro import AvroDeserializer
+from confluent_kafka.serialization import StringDeserializer
+
+
+TOPIC = "dian.declaracion.presentada"
+BOOTSTRAP_SERVERS = "localhost:9092"
+SCHEMA_REGISTRY_URL = "http://localhost:8081"
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Consume eventos tributarios en Avro")
+    parser.add_argument("--group", required=True, help="Grupo consumidor")
+    args = parser.parse_args()
+
+    registry = SchemaRegistryClient({"url": SCHEMA_REGISTRY_URL})
+    avro_deserializer = AvroDeserializer(registry)
+
+    consumer = DeserializingConsumer(
+        {
+            "bootstrap.servers": BOOTSTRAP_SERVERS,
+            "group.id": args.group,
+            "auto.offset.reset": "earliest",
+            "enable.auto.commit": False,
+            "key.deserializer": StringDeserializer("utf_8"),
+            "value.deserializer": avro_deserializer,
+        }
+    )
+
+    total = 0
+    consumer.subscribe([TOPIC])
+    try:
+        while True:
+            mensaje = consumer.poll(5.0)
+            if mensaje is None:
+                print(f"sin más mensajes ({total} leídos)")
+                break
+            if mensaje.error():
+                if mensaje.error().code() == KafkaError._PARTITION_EOF:
+                    continue
+                raise RuntimeError(mensaje.error())
+
+            evento = mensaje.value()
+            total += 1
+            if total <= 5:
+                print(
+                    f"p={mensaje.partition()} o={mensaje.offset()} "
+                    f"nit={evento['nit']} form={evento['formulario']} "
+                    f"valor={evento['valor_pagado']:.2f} estado={evento['estado']}"
+                )
+
+        if total:
+            consumer.commit(asynchronous=False)
+    finally:
+        consumer.close()
+
+
+if __name__ == "__main__":
+    main()
+
+
+ARCHIVO: comandos_lab08.sh
+------------------------------------------------------------------------
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd /home/est1/equipo09/kafka-dian/entorno
+
+docker compose \
+  -f docker-compose-lab-kafka.yml \
+  -f docker-compose.etapaC.yml up -d
+
+curl -s http://localhost:8081/subjects
+
+source .venv/bin/activate
+python3 -m pip install "confluent-kafka[avro,schemaregistry]"
+
+JSON=$(python3 -c "import json; print(json.dumps({'schema': open('declaracion-presentada-v1.avsc').read()}))")
+curl -s -X POST \
+  -H "Content-Type: application/vnd.schemaregistry.v1+json" \
+  --data "$JSON" \
+  http://localhost:8081/subjects/dian.declaracion.presentada-value/versions
+
+curl -s http://localhost:8081/subjects/dian.declaracion.presentada-value/versions
+curl -s http://localhost:8081/config
+
+EQUIPO=equipo09
+python3 productor_avro.py --n 50
+python3 consumidor_avro.py --group "${EQUIPO}-lab08"
+
+docker exec broker1 /opt/kafka/bin/kafka-console-consumer.sh \
+  --bootstrap-server broker1:19092 \
+  --topic dian.declaracion.presentada \
+  --from-beginning --max-messages 1 | xxd | head -4
+
+python3 productor_avro.py --n 5 --invalido
+
+curl -s http://localhost:8081/schemas/ids/1 \
+  | python3 -m json.tool | head -20
+
+
+ARCHIVO: docker-compose.etapaC.yml
+------------------------------------------------------------------------
+# Etapa C (sesiones 10-13): Schema Registry + Kafka Connect + PostgreSQL + MinIO
+# Uso: docker compose -f docker-compose-lab-kafka.yml -f docker-compose.etapaC.yml up -d
+# Schema Registry: http://localhost:8081 · Connect: http://localhost:8083 · MinIO: http://localhost:9001 (minioadmin/minioadmin)
+services:
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.7.0
+    container_name: schema-registry
+    depends_on: [broker1, broker2, broker3]
+    ports: ["8081:8081"]
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: broker1:19092,broker2:19092,broker3:19092
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR: 3
+      SCHEMA_REGISTRY_SCHEMA_COMPATIBILITY_LEVEL: backward   # política institucional por defecto
+
+  connect:
+    build:
+      context: .
+      dockerfile: connect/Dockerfile
+    image: dian-kafka-connect:1.0.0
+    container_name: connect
+    depends_on: [schema-registry, postgres, minio]
+    ports: ["8083:8083"]
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: broker1:19092,broker2:19092,broker3:19092
+      CONNECT_REST_ADVERTISED_HOST_NAME: connect
+      CONNECT_GROUP_ID: dian-connect
+      CONNECT_CONFIG_STORAGE_TOPIC: connect-configs
+      CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets
+      CONNECT_STATUS_STORAGE_TOPIC: connect-status
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 3
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 3
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3
+      CONNECT_KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONNECT_PLUGIN_PATH: /usr/share/java,/usr/share/confluent-hub-components
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    ports: ["5432:5432"]
+    environment:
+      POSTGRES_DB: dian
+      POSTGRES_USER: dian
+      POSTGRES_PASSWORD: dian
+    # wal_level=logical es requisito de Debezium (sesión 12, paso 5)
+    command: ["postgres", "-c", "wal_level=logical", "-c", "max_replication_slots=4", "-c", "max_wal_senders=4"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./seed-declaraciones.sql:/docker-entrypoint-initdb.d/seed.sql:ro
+
+  minio:
+    # Etiqueta fija multi-arquitectura; no usar ``latest`` en una práctica evaluable.
+    image: minio/minio:RELEASE.2025-07-23T15-54-02Z
+    container_name: minio
+    ports: ["9000:9000", "9001:9001"]
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes: ["miniodata:/data"]
+
+  # Lab09 necesita el bucket antes de registrar el sink. El proceso es
+  # idempotente y espera a MinIO, por eso no depende de tiempos arbitrarios.
+  minio-init:
+    image: minio/mc:RELEASE.2025-08-13T08-35-41Z
+    container_name: minio-init
+    depends_on: [minio]
+    restart: "no"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        until mc alias set local http://minio:9000 minioadmin minioadmin; do sleep 2; done
+        mc mb --ignore-existing local/dian-bronce
+    environment:
+      MC_INSECURE: "true"
+
+volumes:
+  pgdata:
+  miniodata:
+
+
+ARCHIVO: README.txt
+------------------------------------------------------------------------
+LABORATORIO 08 - CONTRATO AVRO Y SCHEMA REGISTRY
+Equipo 09
+
+Archivos:
+- declaracion-presentada-v1.avsc: contrato Avro utilizado en la práctica.
+- productor_avro.py: productor con SerializingProducer y AvroSerializer.
+- consumidor_avro.py: consumidor con DeserializingConsumer y AvroDeserializer.
+- comandos_lab08.sh: secuencia reproducible de comandos del laboratorio.
+- docker-compose.etapaC.yml: infraestructura de la etapa C suministrada para la práctica.
+
+Ubicación utilizada durante la ejecución:
+/home/est1/equipo09/kafka-dian/entorno
+
+Dependencia principal:
+confluent-kafka[avro,schemaregistry]
+
+El consumidor no recibe el esquema de forma explícita. El AvroDeserializer lee el
+ID incluido en la cabecera del mensaje y consulta el contrato en Schema Registry.
+
+
