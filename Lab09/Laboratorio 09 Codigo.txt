@@ -1,0 +1,372 @@
+cd /home/est1/equipo09/kafka-dian/entorno
+source .venv/bin/activate
+
+docker compose -f docker-compose-lab-kafka.yml -f docker-compose.override.yml -f docker-compose.etapaC.yml up -d
+
+docker ps --format "table {{.Names}}\t{{.Status}}"
+
+docker ps -a --filter name=broker2
+
+curl -sS http://localhost:8083/connector-plugins | python3 -m json.tool
+
+docker exec postgres psql -U dian -d dian -c "SELECT COUNT(*) FROM declaraciones;"
+
+docker exec postgres psql -U dian -d dian -c "SELECT COUNT(*) AS total, COUNT(actualizado_en) AS con_fecha, MIN(actualizado_en), MAX(actualizado_en) FROM declaraciones;"
+
+find /home/est1/equipo09/kafka-dian -name "conector-jdbc-source.json"
+
+curl -sS http://localhost:8083/connectors
+
+curl -sS -X POST -H "Content-Type: application/json" --data-binary @conector-jdbc-source.json http://localhost:8083/connectors
+
+curl -sS http://localhost:8083/connectors/declaraciones-jdbc-source/status | python3 -m json.tool
+
+docker exec broker1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker1:19092 --list | grep jdbc
+
+docker logs connect --tail 150 2>&1 | grep -iE 'declaraciones|error|warn|timestamp|table' | tail -40
+
+docker exec broker1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker1:19092 --create --topic jdbc.declaraciones --partitions 3 --replication-factor 3
+
+curl -s -X POST -H "Content-Type: application/json" --data @conector-jdbc-source.json localhost:8083/connectors
+
+curl -s localhost:8081/subjects | python3 -m json.tool
+
+curl -s http://localhost:8081/subjects/jdbc.declaraciones-value/versions/1 | python3 -m json.tool | head -25
+
+docker exec broker1 /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server broker1:19092 --topic jdbc.declaraciones --from-beginning --max-messages 3 --property print.key=true 2>/dev/null | head
+
+docker ps -a --filter name=minio
+
+curl -s -X POST -H "Content-Type: application/json" --data @conector-s3-sink.json localhost:8083/connectors
+
+curl -s http://localhost:8083/connectors/declaraciones-s3-sink/status | python3 -m json.tool
+
+curl -sS -X DELETE http://localhost:8083/connectors/declaraciones-s3-sink
+
+docker exec postgres psql -U dian -d dian -c "UPDATE declaraciones SET valor_pagado = valor_pagado + 1, actualizado_en = now() WHERE id_declaracion = 1;"
+
+docker exec postgres psql -U dian -d dian -c "DELETE FROM declaraciones WHERE id_declaracion = 2;"
+
+docker exec broker1 /opt/kafka/bin/kafka-run-class.sh kafka.tools.GetOffsetShell --bootstrap-server broker1:19092 --topic jdbc.declaraciones
+
+docker exec broker1 /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server broker1:19092 --topic jdbc.declaraciones
+
+find /home/est1/equipo09/kafka-dian -name "conector-debezium-source.json"
+
+docker exec postgres psql -U dian -d dian -c "SHOW wal_level;"
+
+curl -sS -X POST -H "Content-Type: application/json" --data @conector-debezium-source.json localhost:8083/connectors
+
+curl -sS http://localhost:8083/connectors/declaraciones-debezium-source/status | python3 -m json.tool
+
+docker exec broker1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker1:19092 --list | grep cdc
+
+docker logs connect --tail 150 2>&1 | grep -iE 'debezium|ERROR|exception|replication|publication|permission' | tail -30
+
+docker exec broker1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker1:19092 --create --topic cdc.public.declaraciones --partitions 3 --replication-factor 3
+
+docker exec postgres psql -U dian -d dian -c "UPDATE declaraciones SET estado='CORREGIDA', actualizado_en=now() WHERE id_declaracion = 3;"
+
+docker exec postgres psql -U dian -d dian -c "DELETE FROM declaraciones WHERE id_declaracion = 4;"
+
+docker exec broker1 /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server broker1:19092 --topic cdc.public.declaraciones --from-beginning --timeout-ms 15000 --property print.key=true 2>/dev/null | tail -5
+
+docker exec postgres psql -U dian -d dian -c "SELECT slot_name, active FROM pg_replication_slots;"
+
+docker exec broker1 /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server broker1:19092 --topic cdc.public.declaraciones
+
+curl -s http://localhost:8083/connectors | python3 -m json.tool
+
+docker restart connect && sleep 40
+
+curl -s http://localhost:8083/connectors | python3 -m json.tool
+
+curl -s http://localhost:8083/connectors/declaraciones-debezium-source/status | python3 -m json.tool
+
+docker ps -a --filter name=connect
+
+curl -sS -i --max-time 10 http://localhost:8083/connectors
+
+curl -sS http://localhost:8083/connectors | python3 -m json.tool
+
+curl -sS http://localhost:8083/connectors/declaraciones-jdbc-source/status | python3 -m json.tool
+
+curl -sS http://localhost:8083/connectors/declaraciones-debezium-source/status | python3 -m json.tool
+
+python3 -c 'import json,getpass,pathlib; p=pathlib.Path("conector-s3-sink.json"); d=json.loads(p.read_text()); d["config"]["aws.access.key.id"]=input("Usuario / Access Key: "); d["config"]["aws.secret.access.key"]=getpass.getpass("Contraseña / Secret Key: "); p.write_text(json.dumps(d,indent=2)+"\n"); print("Credenciales actualizadas")'
+
+python3 -c "import json; print(json.dumps(json.load(open('conector-s3-sink.json'))['config']))" | curl -sS -o /dev/null -w 'HTTP %{http_code}\n' -X PUT -H "Content-Type: application/json" --data-binary @- http://localhost:8083/connectors/declaraciones-s3-sink/config
+
+curl -sS http://localhost:8083/connectors/declaraciones-s3-sink/status | python3 -c "import json,sys; d=json.load(sys.stdin); print('Conector:',d['connector']['state']); [print('Tarea',t['id'],t['state']) for t in d['tasks']]"
+
+docker compose -f docker-compose-lab-kafka.yml -f docker-compose.etapaC.yml ps -a minio-init
+
+docker compose -f docker-compose-lab-kafka.yml -f docker-compose.etapaC.yml logs minio-init | tail -20
+
+grep -n -i -E "access.key|secret|store.url|bucket" conector-s3-sink.json
+
+grep -n -i -E "MINIO_ROOT|access|secret|user|mc " docker-compose.etapaC.yml | head -20
+
+curl -sS -o /dev/null -w 'HTTP %{http_code}\n' -X POST 'http://localhost:8083/connectors/declaraciones-s3-sink/restart?includeTasks=true&onlyFailed=true'
+
+sleep 15
+curl -sS http://localhost:8083/connectors/declaraciones-s3-sink/status | python3 -c 'import json,sys; d=json.load(sys.stdin); print("Conector:",d["connector"]["state"]); [(print("Tarea",t["id"],t["state"])) for t in d["tasks"]]'
+
+bash minio.sh ls -r local/dian-bronce | head
+
+GW=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.Gateway}} {{end}}' connect | awk '{print $1}'); echo "Gateway: $GW"; docker exec connect curl -sS -i --max-time 5 "http://$GW:9000/minio/health/live"
+
+curl -i -X PUT -H "Content-Type: application/json" --data "$(jq -c '.config' conector-s3-sink.json)" http://localhost:8083/connectors/declaraciones-s3-sink/config
+
+curl -s http://localhost:8083/connectors/declaraciones-s3-sink/status | python3 -m json.tool
+
+curl -i -X PUT -H "Content-Type: application/json" --data "$(jq -c '.config' conector-s3-sink.json)" http://localhost:8083/connectors/declaraciones-s3-sink/config
+
+docker ps
+
+grep -n "bucket" conector-s3-sink.json
+
+bash minio.sh ls local
+
+export AWS_ACCESS_KEY_ID="$(python3 -c 'import json;print(json.load(open("conector-s3-sink.json"))["config"]["aws.access.key.id"])')"
+export AWS_SECRET_ACCESS_KEY="$(python3 -c 'import json;print(json.load(open("conector-s3-sink.json"))["config"]["aws.secret.access.key"])')"
+
+docker run --rm --network host --entrypoint /bin/sh -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY minio/mc:RELEASE.2025-08-13T08-35-41Z -c 'mc alias set lab http://127.0.0.1:9000 "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY" >/dev/null && mc stat lab/dian-bronce'
+
+python3 -m pip install boto3
+
+python3 - <<'PY'
+import json
+import boto3
+from botocore.config import Config
+from botocore.exceptions import ClientError
+
+c = json.load(open("conector-s3-sink.json"))["config"]
+s3 = boto3.client(
+    "s3",
+    endpoint_url=c["store.url"],
+    aws_access_key_id=c["aws.access.key.id"],
+    aws_secret_access_key=c["aws.secret.access.key"],
+    region_name="us-east-1",
+    config=Config(s3={"addressing_style": "path"})
+)
+
+try:
+    s3.head_bucket(Bucket="dian-bronce")
+    print("[OK] El bucket dian-bronce existe y es accesible")
+except ClientError as e:
+    print("[ERROR]", e.response["Error"]["Code"])
+    print("HTTP:", e.response["ResponseMetadata"]["HTTPStatusCode"])
+PY
+
+python3 - <<'PY'
+import json
+import boto3
+from botocore.config import Config
+from botocore.exceptions import ClientError, EndpointConnectionError
+
+c = json.load(open("conector-s3-sink.json"))["config"]
+
+s3 = boto3.client(
+    "s3",
+    endpoint_url="http://127.0.0.1:9000",
+    aws_access_key_id=c["aws.access.key.id"],
+    aws_secret_access_key=c["aws.secret.access.key"],
+    region_name="us-east-1",
+    config=Config(s3={"addressing_style": "path"})
+)
+
+try:
+    s3.head_bucket(Bucket="dian-bronce")
+    print("[OK] El bucket dian-bronce existe y es accesible")
+except ClientError as e:
+    print("[ERROR] Código:", e.response["Error"]["Code"])
+    print("HTTP:", e.response["ResponseMetadata"]["HTTPStatusCode"])
+except EndpointConnectionError:
+    print("[ERROR] No se puede conectar con el almacenamiento")
+PY
+
+python3 -c 'import json,boto3; from botocore.config import Config; c=json.load(open("conector-s3-sink.json"))["config"]; s=boto3.client("s3",endpoint_url="http://127.0.0.1:9000",aws_access_key_id=c["aws.access.key.id"],aws_secret_access_key=c["aws.secret.access.key"],config=Config(s3={"addressing_style":"path"})); print("Buckets disponibles:",[b["Name"] for b in s.list_buckets()["Buckets"]])'
+
+python3 - <<'PY'
+import json
+import boto3
+from botocore.config import Config
+
+c = json.load(open("conector-s3-sink.json"))["config"]
+s3 = boto3.client(
+    "s3",
+    endpoint_url="http://127.0.0.1:9000",
+    aws_access_key_id=c["aws.access.key.id"],
+    aws_secret_access_key=c["aws.secret.access.key"],
+    region_name="us-east-1",
+    config=Config(s3={"addressing_style": "path"})
+)
+s3.create_bucket(Bucket="dian-bronce")
+print("[OK] Bucket dian-bronce creado")
+PY
+
+curl -sS -o /dev/null -w 'HTTP %{http_code}\n' -X POST 'http://localhost:8083/connectors/declaraciones-s3-sink/restart?includeTasks=true&onlyFailed=true'
+
+curl -sS http://localhost:8083/connectors/declaraciones-s3-sink/status | python3 -c 'import json,sys; d=json.load(sys.stdin); print("Conector:",d["connector"]["state"]); [print("Tarea",t["id"],t["state"]) for t in d["tasks"]]'
+
+python3 - <<'PY'
+import json, boto3
+from botocore.config import Config
+
+c = json.load(open("conector-s3-sink.json"))["config"]
+s3 = boto3.client(
+    "s3",
+    endpoint_url="http://127.0.0.1:9000",
+    aws_access_key_id=c["aws.access.key.id"],
+    aws_secret_access_key=c["aws.secret.access.key"],
+    region_name="us-east-1",
+    config=Config(s3={"addressing_style": "path"})
+)
+
+r = s3.list_objects_v2(Bucket="dian-bronce")
+objetos = r.get("Contents", [])
+
+print("Archivos encontrados:", len(objetos))
+for obj in objetos:
+    print(obj["Key"], "-", obj["Size"], "bytes")
+PY
+
+python3 -m pip install pyarrow
+
+python3 - <<'PY'
+import json
+import boto3
+import pyarrow.parquet as pq
+from io import BytesIO
+from botocore.config import Config
+
+c = json.load(open("conector-s3-sink.json"))["config"]
+
+s3 = boto3.client(
+    "s3",
+    endpoint_url="http://127.0.0.1:9000",
+    aws_access_key_id=c["aws.access.key.id"],
+    aws_secret_access_key=c["aws.secret.access.key"],
+    region_name="us-east-1",
+    config=Config(s3={"addressing_style": "path"})
+)
+
+total = 0
+archivos = 0
+nits = []
+
+for pagina in s3.get_paginator("list_objects_v2").paginate(
+    Bucket="dian-bronce",
+    Prefix="topics/jdbc.declaraciones/"
+):
+    for obj in pagina.get("Contents", []):
+        if not obj["Key"].endswith(".parquet"):
+            continue
+
+        datos = s3.get_object(
+            Bucket="dian-bronce",
+            Key=obj["Key"]
+        )["Body"].read()
+
+        tabla = pq.read_table(BytesIO(datos))
+        cantidad = tabla.num_rows
+        archivos += 1
+        total += cantidad
+
+        if "nit" in tabla.column_names:
+            nits.extend(tabla.column("nit").to_pylist())
+
+        print(f"Archivo {archivos}: {cantidad} registros")
+
+print("\nRESUMEN")
+print("Archivos Parquet:", archivos)
+print("Total de registros almacenados:", total)
+print("Columnas:", tabla.column_names if archivos else [])
+
+if nits:
+    print("NIT seudonimizado:", all(
+        nit == "SEUDONIMIZADO" for nit in nits
+    ))
+PY
+
+docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group connect-declaraciones-s3-sink
+
+python3 -c 'import json,pathlib; p=pathlib.Path("conector-s3-sink.json"); d=json.loads(p.read_text()); d["config"]["rotate.schedule.interval.ms"]="30000"; p.write_text(json.dumps(d,indent=2)+"\n"); print("[OK] Rotación programada cada 30 segundos")'
+
+python3 -c 'import json; print(json.dumps(json.load(open("conector-s3-sink.json"))["config"]))' | curl -sS -o /dev/null -w 'HTTP %{http_code}\n' -X PUT -H 'Content-Type: application/json' --data-binary @- http://localhost:8083/connectors/declaraciones-s3-sink/config
+
+sleep 75
+docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group connect-declaraciones-s3-sink
+
+python3 - <<'PY'
+import json, boto3
+import pyarrow.parquet as pq
+from io import BytesIO
+from botocore.config import Config
+
+c = json.load(open("conector-s3-sink.json"))["config"]
+
+s3 = boto3.client(
+    "s3",
+    endpoint_url="http://127.0.0.1:9000",
+    aws_access_key_id=c["aws.access.key.id"],
+    aws_secret_access_key=c["aws.secret.access.key"],
+    region_name="us-east-1",
+    config=Config(s3={"addressing_style": "path"})
+)
+
+total = 0
+archivos = 0
+nits_validos = True
+
+for pagina in s3.get_paginator("list_objects_v2").paginate(
+    Bucket="dian-bronce",
+    Prefix="topics/jdbc.declaraciones/"
+):
+    for obj in pagina.get("Contents", []):
+        if not obj["Key"].endswith(".parquet"):
+            continue
+
+        datos = s3.get_object(
+            Bucket="dian-bronce",
+            Key=obj["Key"]
+        )["Body"].read()
+
+        tabla = pq.read_table(BytesIO(datos))
+        archivos += 1
+        total += tabla.num_rows
+
+        if "nit" in tabla.column_names:
+            nits_validos &= all(
+                n == "SEUDONIMIZADO"
+                for n in tabla["nit"].to_pylist()
+            )
+        else:
+            nits_validos = False
+
+print("ARCHIVOS PARQUET:", archivos)
+print("REGISTROS ALMACENADOS:", total)
+print("REGISTROS ESPERADOS:", 502)
+print("NIT SEUDONIMIZADO:", nits_validos)
+print("CONTEO CORRECTO:", total == 502)
+PY
+
+for n in declaraciones-jdbc-source declaraciones-debezium-source; do curl -sS "http://localhost:8083/connectors/$n/status" | python3 -c 'import json,sys; d=json.load(sys.stdin); print("\nConector:",d["name"]); print("Estado:",d["connector"]["state"]); [print("Tarea",t["id"],t["state"]) for t in d["tasks"]]'; done
+
+docker exec postgres psql -U dian -d dian -c "SELECT id_declaracion, estado, actualizado_en FROM public.declaraciones ORDER BY id_declaracion LIMIT 8;"
+
+docker exec postgres psql -U dian -d dian -c "UPDATE public.declaraciones SET estado = 'CORREGIDA', actualizado_en = NOW() WHERE id_declaracion = 5 RETURNING id_declaracion, estado, actualizado_en;"
+
+for topic in jdbc.declaraciones cdc.public.declaraciones; do echo "=== $topic ==="; docker exec broker1 /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server broker1:19092 --topic "$topic"; done
+
+docker exec postgres psql -U dian -d dian -c "DELETE FROM public.declaraciones WHERE id_declaracion = 6 RETURNING id_declaracion;"
+
+sleep 10
+for topic in jdbc.declaraciones cdc.public.declaraciones; do echo "=== $topic ==="; docker exec broker1 /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server broker1:19092 --topic "$topic"; done
+
+docker exec connect bash -lc 'kafka-avro-console-consumer --bootstrap-server broker1:19092 --topic cdc.public.declaraciones --partition 0 --offset 162 --max-messages 1 --property schema.registry.url=http://schema-registry:8081'
+
+for n in declaraciones-jdbc-source declaraciones-debezium-source declaraciones-s3-sink; do curl -sS "http://localhost:8083/connectors/$n/status" | python3 -c 'import json,sys; d=json.load(sys.stdin); print("\nConector:",d["name"]); print("Estado:",d["connector"]["state"]); [print("Tarea",t["id"],t["state"]) for t in d["tasks"]]'; done
+
+docker exec broker1 /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server broker1:19092 --describe --group connect-declaraciones-s3-sink
